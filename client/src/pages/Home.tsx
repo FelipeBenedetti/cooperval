@@ -106,10 +106,9 @@ export default function Home() {
             </motion.span>
 
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6">
-              Cultivando o{" "}
-              <span className="text-[#b7d97a]">futuro</span> com
-              raízes no{" "}
-              <span className="text-[#8fd3f4]">campo</span>
+              Nossa missão é {" "}
+              <span className="text-[#b7d97a]">Inspirar</span> pessoas a cooperar para{" "}
+              <span className="text-[#8fd3f4]">evoluir</span>
             </h1>
 
             <p className="text-white/85 text-lg md:text-xl leading-relaxed mb-8 max-w-2xl">
