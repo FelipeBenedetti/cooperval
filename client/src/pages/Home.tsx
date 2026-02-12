@@ -107,8 +107,9 @@ export default function Home() {
 
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6">
               Nossa missão é {" "}
-              <span className="text-[#b7d97a]">Inspirar</span> pessoas a cooperar para{" "}
-              <span className="text-[#8fd3f4]">evoluir</span>
+              <span className="text-[#b7d97a]">Inspirar</span> pessoas a{" "}
+              <span className="text-[#8fd3f4]">cooperar</span> para{" "}
+              <span className="text-[#b7d97a]">evoluir</span>
             </h1>
 
             <p className="text-white/85 text-lg md:text-xl leading-relaxed mb-8 max-w-2xl">
@@ -163,25 +164,38 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {SERVICES.map((service, index) => {
               const Icon = iconMap[service.icon] || ShoppingCart;
+              const isFeatured = (service as any).featured;
               return (
                 <motion.div
                   key={service.title}
-                  className="group relative bg-white rounded-2xl p-7 md:p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-[#e8e4d8] hover:border-[#8bc34a]/30 overflow-hidden"
+                  className={`group relative rounded-2xl p-7 md:p-8 shadow-sm hover:shadow-xl transition-all duration-500 border overflow-hidden ${
+                    isFeatured
+                      ? "bg-gradient-to-br from-[#6f8f2e] to-[#5a7a24] text-white border-[#8bc34a] lg:col-span-2"
+                      : "bg-white border-[#e8e4d8] hover:border-[#8bc34a]/30"
+                  }`}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ delay: index * 0.1, duration: 0.5 }}
                 >
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6f8f2e] via-[#8bc34a] to-[#b7d97a] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                  {!isFeatured && <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6f8f2e] via-[#8bc34a] to-[#b7d97a] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />}
                   
-                  <div className="w-14 h-14 rounded-xl bg-[#6f8f2e]/10 flex items-center justify-center mb-5 group-hover:bg-[#6f8f2e]/20 transition-colors duration-300">
-                    <Icon size={28} className="text-[#6f8f2e]" />
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 transition-colors duration-300 ${
+                    isFeatured
+                      ? "bg-white/20"
+                      : "bg-[#6f8f2e]/10 group-hover:bg-[#6f8f2e]/20"
+                  }`}>
+                    <Icon size={28} className={isFeatured ? "text-white" : "text-[#6f8f2e]"} />
                   </div>
 
-                  <h3 className="font-serif text-xl font-bold text-[#3a4a2a] mb-3">
+                  <h3 className={`font-serif text-xl font-bold mb-3 ${
+                    isFeatured ? "text-white" : "text-[#3a4a2a]"
+                  }`}>
                     {service.title}
                   </h3>
-                  <p className="text-[#6a6a5a] leading-relaxed text-[15px]">
+                  <p className={`leading-relaxed text-[15px] ${
+                    isFeatured ? "text-white/90" : "text-[#6a6a5a]"
+                  }`}>
                     {service.description}
                   </p>
                 </motion.div>

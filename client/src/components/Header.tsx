@@ -61,7 +61,7 @@ export default function Header() {
           <img
             src={LOGO_URL}
             alt="Cooperval"
-            className="h-14 lg:h-18 w-auto object-contain drop-shadow-md"
+            className="h-14 lg:h-20 w-auto object-contain drop-shadow-md"
           />
           <div className="hidden sm:block">
             <span

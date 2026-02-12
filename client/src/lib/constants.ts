@@ -71,6 +71,12 @@ export const STORES = [
 
 export const SERVICES = [
   {
+    icon: "Factory",
+    title: "Fábrica de Rações - Nutrição",
+    description: "Produção própria de rações para bovinos, suínos, aves e ovinos com a marca Nutrição Cooperval. Foco principal da empresa em qualidade e nutrição animal.",
+    featured: true,
+  },
+  {
     icon: "ShoppingCart",
     title: "Mercado",
     description: "Linha completa de produtos de mercearia, higiene e limpeza, açougue e padaria com os melhores preços.",
@@ -79,11 +85,6 @@ export const SERVICES = [
     icon: "Tractor",
     title: "Agropecuária",
     description: "Ampla variedade de medicamentos veterinários, rações, utensílios para pecuária e lavoura, hortifrutigranjeiros.",
-  },
-  {
-    icon: "Factory",
-    title: "Fábrica de Rações",
-    description: "Produção própria de rações para bovinos, suínos, aves e ovinos com a marca Nutrição Cooperval.",
   },
   {
     icon: "Milk",
@@ -129,3 +130,56 @@ export const STATS = [
   { value: "9", label: "Pontos de atendimento" },
   { value: "27", label: "Municípios atendidos" },
 ];
+
+export const BUSINESS_HOURS = {
+  market: {
+    name: "Mercado",
+    hours: [
+      { days: "Segunda à sexta", time: "08h às 12h / 13h30 às 19h" },
+      { days: "Sábados", time: "08h às 12h / 14h às 18h" },
+      { days: "Domingos", time: "08h30 às 11h30" },
+    ],
+  },
+  agroMatrix: {
+    name: "Agropecuária Matriz e Logística",
+    hours: [
+      { days: "Segunda à sexta", time: "08h às 12h / 13h30 às 18h" },
+      { days: "Sábados", time: "08h às 12h" },
+    ],
+  },
+  agroFilial: {
+    name: "Agropecuárias Filiais",
+    hours: [
+      { days: "Segunda à sexta", time: "08h às 11h30 / 13h às 17h30" },
+      { days: "Sábados", time: "08h às 11h" },
+    ],
+  },
+  administrative: {
+    name: "Setor Administrativo",
+    hours: [
+      { days: "Segunda à sexta", time: "08h às 12h / 13h30 às 18h" },
+      { days: "Sábados", time: "08h às 12h" },
+    ],
+  },
+  feedFactory: {
+    name: "Fábrica de Rações",
+    hours: [
+      { days: "Segunda à sexta", time: "07h às 12h / 13h às 17h" },
+      { days: "Sábados", time: "07h às 11h" },
+    ],
+  },
+  milkCollection: {
+    name: "Posto de Recebimento de Leite",
+    hours: [
+      { days: "Segunda à sexta", time: "06h às 12h / 12h às 18h" },
+      { days: "Sábados e domingos", time: "06h às 16h" },
+    ],
+  },
+  distributionCenter: {
+    name: "Centro de Distribuição",
+    hours: [
+      { days: "Segunda à sexta", time: "08h às 12h / 13h30 às 18h" },
+      { days: "Sábados", time: "08h às 12h" },
+    ],
+  },
+};
