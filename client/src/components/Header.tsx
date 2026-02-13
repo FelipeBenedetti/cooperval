@@ -56,23 +56,16 @@ export default function Header() {
       }`}
     >
       <div className="container flex items-center justify-between h-20 lg:h-24">
-        {/* Logo */}
+        {/* Logo (Removida conforme solicitado, mantendo apenas o link de texto para acessibilidade/navegação se desejar, ou removendo tudo) */}
         <Link href="/" className="flex items-center gap-3 shrink-0">
-          <img
-            src={LOGO_URL}
-            alt="Cooperval"
-            className="h-14 lg:h-20 w-auto object-contain drop-shadow-md"
-          />
-          <div className="hidden sm:block">
-            <span
-              className={`font-serif text-xl lg:text-2xl font-bold transition-colors duration-500 ${
-                scrolled ? "text-[#6f8f2e]" : "text-white"
-              }`}
-              style={{ textShadow: scrolled ? "none" : "0 2px 8px rgba(0,0,0,0.4)" }}
-            >
-              Cooperval
-            </span>
-          </div>
+          <span
+            className={`font-serif text-xl lg:text-2xl font-bold transition-colors duration-500 ${
+              scrolled ? "text-[#6f8f2e]" : "text-white"
+            }`}
+            style={{ textShadow: scrolled ? "none" : "0 2px 8px rgba(0,0,0,0.4)" }}
+          >
+            Cooperval
+          </span>
         </Link>
 
         {/* Desktop Nav */}

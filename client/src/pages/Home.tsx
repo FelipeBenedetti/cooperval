@@ -112,18 +112,18 @@ export default function Home() {
               Desde 1993 no coração do Alto Uruguai
             </motion.span>
 
-            <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10 mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12 mb-8">
               <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] flex-1">
                 Nossa missão é {" "}
                 <span className="text-[#b7d97a]">Inspirar</span> pessoas a{" "}
                 <span className="text-[#8fd3f4]">cooperar</span> para{" "}
                 <span className="text-[#b7d97a]">evoluir</span>
               </h1>
-              <div className="shrink-0">
+              <div className="shrink-0 order-last lg:order-none flex justify-center lg:justify-start">
                 <img 
                   src={IMAGES.logo} 
                   alt="Logo Cooperval" 
-                  className="h-24 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl"
+                  className="h-32 sm:h-40 md:h-52 lg:h-64 w-auto object-contain drop-shadow-2xl"
                 />
               </div>
             </div>
