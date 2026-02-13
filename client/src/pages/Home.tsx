@@ -86,7 +86,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* ========== HERO ========== */}
-      <section className="relative h-[90vh] min-h-[600px] flex items-center overflow-hidden">
+      <section className="relative h-[90vh] min-h-[700px] flex items-center pt-24 md:pt-32 lg:pt-40 overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={IMAGES.hero}
