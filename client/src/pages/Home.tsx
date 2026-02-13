@@ -86,7 +86,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* ========== HERO ========== */}
-      <section className="relative h-[90vh] min-h-[700px] flex items-center pt-24 md:pt-32 lg:pt-40 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-24 md:pt-32 lg:pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={IMAGES.hero}
@@ -123,7 +123,7 @@ export default function Home() {
                 <img 
                   src={IMAGES.logo} 
                   alt="Logo Cooperval" 
-                  className="h-32 sm:h-40 md:h-52 lg:h-64 w-auto object-contain drop-shadow-2xl"
+                  className="h-28 sm:h-36 md:h-44 lg:h-56 w-auto object-contain drop-shadow-2xl"
                 />
               </div>
             </div>

@@ -49,20 +49,13 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-[#faf8f2]/95 backdrop-blur-md shadow-md"
-          : "bg-transparent"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-[#2d3a1e] shadow-md`}
     >
       <div className="container flex items-center justify-between h-20 lg:h-24">
         {/* Logo (Removida conforme solicitado, mantendo apenas o link de texto para acessibilidade/navegação se desejar, ou removendo tudo) */}
         <Link href="/" className="flex items-center gap-3 shrink-0">
           <span
-            className={`font-serif text-xl lg:text-2xl font-bold transition-colors duration-500 ${
-              scrolled ? "text-[#6f8f2e]" : "text-white"
-            }`}
-            style={{ textShadow: scrolled ? "none" : "0 2px 8px rgba(0,0,0,0.4)" }}
+              className={`font-serif text-xl lg:text-2xl font-bold text-white`}
           >
             Cooperval
           </span>
@@ -83,15 +76,10 @@ export default function Header() {
                   }
                 }}
                 className={`relative px-4 py-2 text-[15px] font-medium rounded-full transition-all duration-300 ${
-                  scrolled
-                    ? isActive
-                      ? "text-[#6f8f2e] bg-[#6f8f2e]/10"
-                      : "text-[#4a4a3a] hover:text-[#6f8f2e] hover:bg-[#6f8f2e]/5"
-                    : isActive
-                      ? "text-white bg-white/20"
-                      : "text-white/90 hover:text-white hover:bg-white/10"
+                  isActive
+                    ? "text-[#b7d97a] bg-white/10"
+                    : "text-white/90 hover:text-white hover:bg-white/5"
                 }`}
-                style={{ textShadow: scrolled ? "none" : "0 1px 4px rgba(0,0,0,0.3)" }}
               >
                 {link.label}
               </a>
@@ -102,9 +90,7 @@ export default function Header() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className={`lg:hidden p-2 rounded-xl transition-colors ${
-            scrolled ? "text-[#6f8f2e]" : "text-white"
-          }`}
+          className={`lg:hidden p-2 rounded-xl text-white`}
           aria-label="Menu"
         >
           {mobileOpen ? <X size={28} /> : <Menu size={28} />}
