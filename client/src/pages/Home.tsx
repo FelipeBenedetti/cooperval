@@ -119,11 +119,11 @@ export default function Home() {
                 <span className="text-[#8fd3f4]">cooperar</span> para{" "}
                 <span className="text-[#b7d97a]">evoluir</span>
               </h1>
-              <div className="shrink-0 order-last lg:order-none flex justify-center lg:justify-start">
+              <div className="shrink-0 order-last lg:order-none flex justify-center lg:justify-end lg:pl-20">
                 <img 
                   src={IMAGES.logo} 
                   alt="Logo Cooperval" 
-                  className="h-36 sm:h-48 md:h-64 lg:h-[450px] w-auto max-w-full object-contain drop-shadow-2xl transition-all duration-500"
+                  className="h-36 sm:h-52 md:h-72 lg:h-[550px] w-auto max-w-full object-contain drop-shadow-2xl transition-all duration-500 hover:scale-105"
                 />
               </div>
             </div>
@@ -477,80 +477,61 @@ export default function Home() {
               subtitle="A governança da Cooperval é exercida por conselhos eleitos democraticamente pelos associados."
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {/* Conselho Administrativo */}
+            <div className="max-w-5xl mx-auto space-y-12">
+              {/* Diretoria Executiva */}
               <motion.div
-                className="bg-white rounded-2xl p-8 shadow-sm border border-[#e8e4d8]"
+                className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-[#e8e4d8]"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-8">
                   <div className="w-12 h-12 rounded-xl bg-[#6f8f2e]/10 flex items-center justify-center">
                     <Award size={24} className="text-[#6f8f2e]" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-xl font-bold text-[#3a4a2a]">{COUNCILS.administrative.title}</h3>
-                    <span className="text-sm text-[#8bc34a] font-medium">{COUNCILS.administrative.period}</span>
+                    <h3 className="font-serif text-2xl font-bold text-[#3a4a2a]">{COUNCILS.executive.title}</h3>
+                    <span className="text-sm text-[#8bc34a] font-medium">{COUNCILS.executive.period}</span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="p-3 bg-[#6f8f2e]/5 rounded-xl">
-                    <span className="text-xs font-semibold text-[#6f8f2e] uppercase tracking-wide">Presidente</span>
-                    <p className="text-[#3a4a2a] font-semibold mt-1">{COUNCILS.administrative.president}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-6 bg-[#6f8f2e]/5 rounded-2xl border border-[#6f8f2e]/10">
+                    <span className="text-xs font-bold text-[#6f8f2e] uppercase tracking-widest">Presidente</span>
+                    <p className="text-xl text-[#3a4a2a] font-bold mt-2">{COUNCILS.executive.president}</p>
                   </div>
-                  <div className="p-3 bg-[#6f8f2e]/5 rounded-xl">
-                    <span className="text-xs font-semibold text-[#6f8f2e] uppercase tracking-wide">Vice-presidente</span>
-                    <p className="text-[#3a4a2a] font-semibold mt-1">{COUNCILS.administrative.vicePresident}</p>
-                  </div>
-                  <div className="p-3 bg-[#6f8f2e]/5 rounded-xl">
-                    <span className="text-xs font-semibold text-[#6f8f2e] uppercase tracking-wide">Conselheiros</span>
-                    <ul className="mt-1 space-y-1">
-                      {COUNCILS.administrative.counselors.map((c) => (
-                        <li key={c} className="text-[#5a5a4a] text-sm">{c}</li>
-                      ))}
-                    </ul>
+                  <div className="p-6 bg-[#6f8f2e]/5 rounded-2xl border border-[#6f8f2e]/10">
+                    <span className="text-xs font-bold text-[#6f8f2e] uppercase tracking-widest">Vice-presidente</span>
+                    <p className="text-xl text-[#3a4a2a] font-bold mt-2">{COUNCILS.executive.vicePresident}</p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Conselho Fiscal */}
+              {/* Conselheiros */}
               <motion.div
-                className="bg-white rounded-2xl p-8 shadow-sm border border-[#e8e4d8]"
+                className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-[#e8e4d8]"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.15 }}
               >
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-8">
                   <div className="w-12 h-12 rounded-xl bg-[#5fb3e6]/10 flex items-center justify-center">
                     <Users size={24} className="text-[#5fb3e6]" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-xl font-bold text-[#3a4a2a]">{COUNCILS.fiscal.title}</h3>
-                    <span className="text-sm text-[#5fb3e6] font-medium">{COUNCILS.fiscal.period}</span>
+                    <h3 className="font-serif text-2xl font-bold text-[#3a4a2a]">{COUNCILS.counselors.title}</h3>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="p-3 bg-[#5fb3e6]/5 rounded-xl">
-                    <span className="text-xs font-semibold text-[#5fb3e6] uppercase tracking-wide">Efetivos</span>
-                    <ul className="mt-1 space-y-1">
-                      {COUNCILS.fiscal.effective.map((c) => (
-                        <li key={c} className="text-[#3a4a2a] font-semibold text-sm">{c}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="p-3 bg-[#5fb3e6]/5 rounded-xl">
-                    <span className="text-xs font-semibold text-[#5fb3e6] uppercase tracking-wide">Suplentes</span>
-                    <ul className="mt-1 space-y-1">
-                      {COUNCILS.fiscal.substitutes.map((c) => (
-                        <li key={c} className="text-[#5a5a4a] text-sm">{c}</li>
-                      ))}
-                    </ul>
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {COUNCILS.counselors.members.map((member, idx) => (
+                    <div key={idx} className="p-4 bg-[#f9f9f5] rounded-xl border border-[#e8e4d8]/50 flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-[#8bc34a]" />
+                      <span className="text-[#5a5a4a] font-medium">{member}</span>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             </div>

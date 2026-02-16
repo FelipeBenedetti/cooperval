@@ -135,22 +135,25 @@ export const SERVICES = [
 ];
 
 export const COUNCILS = {
-  fiscal: {
-    title: "Conselho Fiscal",
-    period: "2025-2026",
-    effective: ["Ivo Ostroski", "Dolcimar Antonio Orso", "Vladenice Bertotti"],
-    substitutes: ["João Batista Rubas", "Ari Francisco Steinke", "Jandir Buratti"],
-  },
-  administrative: {
-    title: "Conselho Administrativo",
+  executive: {
+    title: "Diretoria Executiva",
     period: "2024-2026",
     president: "Giovani Tessaro",
     vicePresident: "Fabrício Rocco Gasparetto",
-    counselors: [
+  },
+  counselors: {
+    title: "Conselheiros",
+    members: [
       "Jaci Agustinho Auziliero",
       "Marcel Liotto",
       "Gessi Fátima Cortina Vieira Dos Santos",
       "Evandro Carlos Bertela",
+      "Ivo Ostroski",
+      "Dolcimar Antonio Orso",
+      "Vladenice Bertotti",
+      "João Batista Rubas",
+      "Ari Francisco Steinke",
+      "Jandir Buratti",
     ],
   },
 };
