@@ -62,19 +62,14 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5 text-sm text-white/70">
                 <Phone size={16} className="shrink-0 text-[#8bc34a]" />
-                <span>(54) 99974-9865</span>
+                <span>(54)98414-1517 ou (54)98414-1517</span>
               </li>
               <li className="flex items-center gap-2.5 text-sm text-white/70">
                 <Mail size={16} className="shrink-0 text-[#8bc34a]" />
-                <span>contato@cooperval.coop.br</span>
-              </li>
-              <li className="flex items-start gap-2.5 text-sm text-white/70">
-                <Clock size={16} className="shrink-0 mt-0.5 text-[#8bc34a]" />
-                <span>Seg a Sex: 7h30 às 18h<br />Sáb: 7h30 às 12h</span>
+                <span>adm01@cooperval-eg.com.br</span>
               </li>
             </ul>
           </div>
-
           {/* Logos */}
           <div>
             <h4 className="font-serif text-lg font-semibold mb-4 text-[#b7d97a]">Nossos Selos</h4>

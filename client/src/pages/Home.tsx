@@ -1,15 +1,29 @@
-/*
- * Design: Terra Viva — Naturalismo Orgânico
- * Home: Hero com imagem full-width, seções de serviços, sobre, lojas (carousel) e conselhos
- * Cores: Verdes (#6f8f2e, #8bc34a, #b7d97a) e Azuis (#8fd3f4, #5fb3e6)
- * Tipografia: Playfair Display (títulos), Source Sans 3 (corpo)
- */
 import { motion } from "framer-motion";
-import { ShoppingCart, Tractor, Factory, Milk, Wheat, Stethoscope, MapPin, Phone, ChevronLeft, ChevronRight, Users, Award } from "lucide-react";
+import {
+  ShoppingCart,
+  Tractor,
+  Factory,
+  Milk,
+  Wheat,
+  Stethoscope,
+  MapPin,
+  Phone,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  Award,
+} from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import WaveDivider from "@/components/WaveDivider";
-import { IMAGES, STORES, SERVICES, COUNCILS, STATS, BUSINESS_HOURS } from "@/lib/constants";
+import {
+  IMAGES,
+  STORES,
+  SERVICES,
+  COUNCILS,
+  STATS,
+  BUSINESS_HOURS,
+} from "@/lib/constants";
 import {
   Dialog,
   DialogContent,
@@ -19,10 +33,19 @@ import {
 } from "@/components/ui/dialog";
 
 const iconMap: Record<string, React.ElementType> = {
-  ShoppingCart, Tractor, Factory, Milk, Wheat, Stethoscope,
+  ShoppingCart,
+  Tractor,
+  Factory,
+  Milk,
+  Wheat,
+  Stethoscope,
 };
 
-function useCounter(end: number, duration: number = 2000, inView: boolean = false) {
+function useCounter(
+  end: number,
+  duration: number = 2000,
+  inView: boolean = false
+) {
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (!inView) return;
@@ -42,7 +65,15 @@ function useCounter(end: number, duration: number = 2000, inView: boolean = fals
   return count;
 }
 
-function StatCard({ value, label, index }: { value: string; label: string; index: number }) {
+function StatCard({
+  value,
+  label,
+  index,
+}: {
+  value: string;
+  label: string;
+  index: number;
+}) {
   const [inView, setInView] = useState(false);
   const numericValue = parseInt(value.replace(/\D/g, ""));
   const suffix = value.replace(/\d/g, "");
@@ -58,9 +89,12 @@ function StatCard({ value, label, index }: { value: string; label: string; index
       onViewportEnter={() => setInView(true)}
     >
       <span className="block font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
-        {count}{suffix}
+        {count}
+        {suffix}
       </span>
-      <span className="text-white/80 text-sm md:text-base font-medium">{label}</span>
+      <span className="text-white/80 text-sm md:text-base font-medium">
+        {label}
+      </span>
     </motion.div>
   );
 }
@@ -70,11 +104,11 @@ export default function Home() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const nextStore = useCallback(() => {
-    setCurrentStore((prev) => (prev + 1) % STORES.length);
+    setCurrentStore(prev => (prev + 1) % STORES.length);
   }, []);
 
   const prevStore = useCallback(() => {
-    setCurrentStore((prev) => (prev - 1 + STORES.length) % STORES.length);
+    setCurrentStore(prev => (prev - 1 + STORES.length) % STORES.length);
   }, []);
 
   useEffect(() => {
@@ -86,7 +120,9 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* ========== HERO ========== */}
+      {/* ========== HERO ========== */}
       <section className="relative min-h-screen flex items-center pt-24 md:pt-32 lg:pt-32 pb-20 overflow-hidden">
+        {/* Background */}
         <div className="absolute inset-0">
           <img
             src={IMAGES.hero}
@@ -96,6 +132,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-[#2d3a1e]/60" />
         </div>
 
+        {/* Conteúdo */}
         <div className="container relative z-10">
           <motion.div
             className="max-w-3xl"
@@ -112,29 +149,30 @@ export default function Home() {
               Desde 1993 no coração do Alto Uruguai
             </motion.span>
 
-            <div className="flex flex-col lg:flex-row lg:items-center mb-8 relative">
-              <div className="lg:w-3/5 z-10">
+            <div className="flex flex-col lg:flex-row lg:items-center mb-8">
+              <div className="lg:w-3/5">
                 <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1]">
-                  Nossa missão é {" "}
+                  Nossa missão é{" "}
                   <span className="text-[#b7d97a]">Inspirar</span> pessoas a{" "}
                   <span className="text-[#8fd3f4]">cooperar</span> para{" "}
                   <span className="text-[#b7d97a]">evoluir</span>
                 </h1>
               </div>
-              
-              {/* Logo - Mobile: Abaixo do texto / Desktop: Alinhada ao final da tela à direita dentro do Hero */}
-              <div className="mt-8 lg:mt-0 lg:absolute lg:-right-48 lg:top-1/2 lg:-translate-y-1/2 shrink-0 flex justify-center lg:justify-end pointer-events-none">
-                <img 
-                  src={IMAGES.logo} 
-                  alt="Logo Cooperval" 
-                  className="h-40 sm:h-56 md:h-72 lg:h-[680px] w-auto max-w-none object-contain drop-shadow-2xl transition-all duration-700"
+
+              {/* Logo Mobile */}
+              <div className="mt-8 lg:hidden flex justify-center pointer-events-none">
+                <img
+                  src={IMAGES.logo}
+                  alt="Logo Cooperval"
+                  className="h-40 sm:h-56 md:h-72 w-auto object-contain drop-shadow-2xl"
                 />
               </div>
             </div>
 
             <p className="text-white/85 text-lg md:text-xl leading-relaxed mb-8 max-w-2xl">
-              Cooperativa dos Pequenos Agropecuaristas de Erval Grande. 
-              Promovendo o desenvolvimento econômico, social e humano de forma sustentável.
+              Cooperativa dos Pequenos Agropecuaristas de Erval Grande.
+              Promovendo o desenvolvimento econômico, social e humano de forma
+              sustentável.
             </p>
 
             <div className="flex flex-wrap gap-4">
@@ -144,6 +182,7 @@ export default function Home() {
               >
                 Conheça Nossa História
               </a>
+
               <a
                 href="#servicos"
                 className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold rounded-full border border-white/20 transition-all duration-300"
@@ -154,10 +193,28 @@ export default function Home() {
           </motion.div>
         </div>
 
+        {/* Logo Desktop */}
+        <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 pr-8 pointer-events-none z-10">
+          <img
+            src={IMAGES.logo}
+            alt="Logo Cooperval"
+            className="h-[420px] xl:h-[720px] w-auto object-contain drop-shadow-2xl"
+          />
+        </div>
+
         {/* Bottom wave */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-12 md:h-16 lg:h-20" preserveAspectRatio="none">
-            <path d="M0,40 C360,80 720,10 1080,50 C1260,65 1380,55 1440,40 L1440,80 L0,80 Z" fill="#faf8f2" />
+          <svg
+            viewBox="0 0 1440 80"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-12 md:h-16 lg:h-20"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,40 C360,80 720,10 1080,50 C1260,65 1380,55 1440,40 L1440,80 L0,80 Z"
+              fill="#faf8f2"
+            />
           </svg>
         </div>
       </section>
@@ -167,7 +224,12 @@ export default function Home() {
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
             {STATS.map((stat, i) => (
-              <StatCard key={stat.label} value={stat.value} label={stat.label} index={i} />
+              <StatCard
+                key={stat.label}
+                value={stat.value}
+                label={stat.label}
+                index={i}
+              />
             ))}
           </div>
         </div>
@@ -198,24 +260,35 @@ export default function Home() {
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ delay: index * 0.1, duration: 0.5 }}
                 >
-                  {!isFeatured && <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6f8f2e] via-[#8bc34a] to-[#b7d97a] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />}
-                  
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 transition-colors duration-300 ${
-                    isFeatured
-                      ? "bg-white/20"
-                      : "bg-[#6f8f2e]/10 group-hover:bg-[#6f8f2e]/20"
-                  }`}>
-                    <Icon size={28} className={isFeatured ? "text-white" : "text-[#6f8f2e]"} />
+                  {!isFeatured && (
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6f8f2e] via-[#8bc34a] to-[#b7d97a] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                  )}
+
+                  <div
+                    className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 transition-colors duration-300 ${
+                      isFeatured
+                        ? "bg-white/20"
+                        : "bg-[#6f8f2e]/10 group-hover:bg-[#6f8f2e]/20"
+                    }`}
+                  >
+                    <Icon
+                      size={28}
+                      className={isFeatured ? "text-white" : "text-[#6f8f2e]"}
+                    />
                   </div>
 
-                  <h3 className={`font-serif text-xl font-bold mb-3 ${
-                    isFeatured ? "text-white" : "text-[#3a4a2a]"
-                  }`}>
+                  <h3
+                    className={`font-serif text-xl font-bold mb-3 ${
+                      isFeatured ? "text-white" : "text-[#3a4a2a]"
+                    }`}
+                  >
                     {service.title}
                   </h3>
-                  <p className={`leading-relaxed text-[15px] ${
-                    isFeatured ? "text-white/90" : "text-[#6a6a5a]"
-                  }`}>
+                  <p
+                    className={`leading-relaxed text-[15px] ${
+                      isFeatured ? "text-white/90" : "text-[#6a6a5a]"
+                    }`}
+                  >
                     {service.description}
                   </p>
                 </motion.div>
@@ -278,10 +351,17 @@ export default function Home() {
                   Mais de 30 anos de cooperativismo
                 </h2>
                 <p className="text-white/85 text-lg leading-relaxed mb-6">
-                  A COOPERVAL tem na sua história a essência do cooperativismo em promover o desenvolvimento econômico, social e humano de forma sustentável e equilibrada. Fundada em 16 de junho de 1993, nasceu da coragem e união de um grupo de agricultores que enxergaram na cooperação uma oportunidade de crescimento.
+                  A COOPERVAL tem na sua história a essência do cooperativismo
+                  em promover o desenvolvimento econômico, social e humano de
+                  forma sustentável e equilibrada. Fundada em 16 de junho de
+                  1993, nasceu da coragem e união de um grupo de agricultores
+                  que enxergaram na cooperação uma oportunidade de crescimento.
                 </p>
                 <p className="text-white/75 leading-relaxed mb-8">
-                  Hoje, somos mais de 50 colaboradores, com estrutura moderna, múltiplos pontos de atendimento e atuação em 27 municípios da região norte do RS. Mantemos os pés no passado para valorizar nossa história, mas o olhar está voltado para o futuro.
+                  Hoje, somos mais de 50 colaboradores, com estrutura moderna,
+                  múltiplos pontos de atendimento e atuação em 27 municípios da
+                  região norte do RS. Mantemos os pés no passado para valorizar
+                  nossa história, mas o olhar está voltado para o futuro.
                 </p>
                 <a
                   href="/quem-somos"
@@ -311,8 +391,12 @@ export default function Home() {
                       <Users size={24} className="text-[#6f8f2e]" />
                     </div>
                     <div>
-                      <span className="block font-serif text-2xl font-bold text-[#3a4a2a]">1993</span>
-                      <span className="text-sm text-[#6a6a5a]">Ano de fundação</span>
+                      <span className="block font-serif text-2xl font-bold text-[#3a4a2a]">
+                        1993
+                      </span>
+                      <span className="text-sm text-[#6a6a5a]">
+                        Ano de fundação
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -342,7 +426,7 @@ export default function Home() {
                 className="flex transition-transform duration-500 ease-out"
                 style={{ transform: `translateX(-${currentStore * 100}%)` }}
               >
-                {STORES.map((store) => (
+                {STORES.map(store => (
                   <div key={store.name} className="w-full shrink-0 px-2">
                     <div className="bg-white rounded-2xl shadow-lg border border-[#e8e4d8] p-8 md:p-10">
                       <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
@@ -353,20 +437,34 @@ export default function Home() {
                                 MATRIZ
                               </span>
                             )}
-                            <span className="text-[#5fb3e6] text-sm font-medium">{store.city}</span>
+                            <span className="text-[#5fb3e6] text-sm font-medium">
+                              {store.city}
+                            </span>
                           </div>
                           <h3 className="font-serif text-2xl md:text-3xl font-bold text-[#3a4a2a] mb-3">
                             {store.name}
                           </h3>
-                          <p className="text-[#6a6a5a] mb-4">{store.description}</p>
-                          
+                          <p className="text-[#6a6a5a] mb-4">
+                            {store.description}
+                          </p>
+
                           <div className="flex items-start gap-2 text-[#5a5a4a] mb-2">
-                            <MapPin size={18} className="shrink-0 mt-0.5 text-[#8bc34a]" />
-                            <span className="text-sm">{store.address} — {store.city}, RS</span>
+                            <MapPin
+                              size={18}
+                              className="shrink-0 mt-0.5 text-[#8bc34a]"
+                            />
+                            <span className="text-sm">
+                              {store.address} — {store.city}, RS
+                            </span>
                           </div>
                           <div className="flex items-center gap-2 text-[#5a5a4a] mb-6">
-                            <Phone size={18} className="shrink-0 text-[#8bc34a]" />
-                            <span className="text-sm">{store.whatsappFormatted}</span>
+                            <Phone
+                              size={18}
+                              className="shrink-0 text-[#8bc34a]"
+                            />
+                            <span className="text-sm">
+                              {store.whatsappFormatted}
+                            </span>
                           </div>
                           <Dialog>
                             <DialogTrigger asChild>
@@ -376,8 +474,8 @@ export default function Home() {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden border-none bg-[#faf8f2]">
                               <div className="relative h-48 sm:h-64">
-                                <img 
-                                  src={(store as any).image || IMAGES.agro} 
+                                <img
+                                  src={(store as any).image || IMAGES.agro}
                                   alt={store.name}
                                   className="w-full h-full object-cover"
                                 />
@@ -390,22 +488,40 @@ export default function Home() {
                               </div>
                               <div className="p-6 space-y-6">
                                 <div>
-                                  <h4 className="text-sm font-semibold text-[#6f8f2e] uppercase tracking-wider mb-2">Localização</h4>
+                                  <h4 className="text-sm font-semibold text-[#6f8f2e] uppercase tracking-wider mb-2">
+                                    Localização
+                                  </h4>
                                   <div className="flex items-start gap-2 text-[#3a4a2a]">
-                                    <MapPin size={18} className="shrink-0 mt-0.5 text-[#8bc34a]" />
-                                    <span>{store.address} — {store.city}, RS</span>
+                                    <MapPin
+                                      size={18}
+                                      className="shrink-0 mt-0.5 text-[#8bc34a]"
+                                    />
+                                    <span>
+                                      {store.address} — {store.city}, RS
+                                    </span>
                                   </div>
                                 </div>
-                                
+
                                 <div>
-                                  <h4 className="text-sm font-semibold text-[#6f8f2e] uppercase tracking-wider mb-2">Horário de Atendimento</h4>
+                                  <h4 className="text-sm font-semibold text-[#6f8f2e] uppercase tracking-wider mb-2">
+                                    Horário de Atendimento
+                                  </h4>
                                   <div className="bg-white rounded-xl p-4 border border-[#e8e4d8] space-y-2">
-                                    {((store as any).hours || []).map((h: any, i: number) => (
-                                      <div key={i} className="flex justify-between text-sm">
-                                        <span className="font-medium text-[#3a4a2a]">{h.days}</span>
-                                        <span className="text-[#6a6a5a]">{h.time}</span>
-                                      </div>
-                                    ))}
+                                    {((store as any).hours || []).map(
+                                      (h: any, i: number) => (
+                                        <div
+                                          key={i}
+                                          className="flex justify-between text-sm"
+                                        >
+                                          <span className="font-medium text-[#3a4a2a]">
+                                            {h.days}
+                                          </span>
+                                          <span className="text-[#6a6a5a]">
+                                            {h.time}
+                                          </span>
+                                        </div>
+                                      )
+                                    )}
                                   </div>
                                 </div>
 
@@ -419,8 +535,13 @@ export default function Home() {
                                     <Phone size={18} />
                                     Falar no WhatsApp
                                   </a>
-                                  <button 
-                                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address + ' ' + store.city)}`, '_blank')}
+                                  <button
+                                    onClick={() =>
+                                      window.open(
+                                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address + " " + store.city)}`,
+                                        "_blank"
+                                      )
+                                    }
                                     className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-[#e8e4d8] text-[#3a4a2a] font-semibold rounded-full hover:bg-[#f5f5f0] transition-all duration-300"
                                   >
                                     <MapPin size={18} />
@@ -461,7 +582,9 @@ export default function Home() {
                   key={i}
                   onClick={() => setCurrentStore(i)}
                   className={`h-2.5 rounded-full transition-all duration-300 ${
-                    i === currentStore ? "w-8 bg-[#6f8f2e]" : "w-2.5 bg-[#6f8f2e]/25 hover:bg-[#6f8f2e]/40"
+                    i === currentStore
+                      ? "w-8 bg-[#6f8f2e]"
+                      : "w-2.5 bg-[#6f8f2e]/25 hover:bg-[#6f8f2e]/40"
                   }`}
                   aria-label={`Ir para loja ${i + 1}`}
                 />
@@ -495,19 +618,31 @@ export default function Home() {
                     <Award size={24} className="text-[#6f8f2e]" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-2xl font-bold text-[#3a4a2a]">{COUNCILS.executive.title}</h3>
-                    <span className="text-sm text-[#8bc34a] font-medium">{COUNCILS.executive.period}</span>
+                    <h3 className="font-serif text-2xl font-bold text-[#3a4a2a]">
+                      {COUNCILS.executive.title}
+                    </h3>
+                    <span className="text-sm text-[#8bc34a] font-medium">
+                      {COUNCILS.executive.period}
+                    </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="p-6 bg-[#6f8f2e]/5 rounded-2xl border border-[#6f8f2e]/10">
-                    <span className="text-xs font-bold text-[#6f8f2e] uppercase tracking-widest">Presidente</span>
-                    <p className="text-xl text-[#3a4a2a] font-bold mt-2">{COUNCILS.executive.president}</p>
+                    <span className="text-xs font-bold text-[#6f8f2e] uppercase tracking-widest">
+                      Presidente
+                    </span>
+                    <p className="text-xl text-[#3a4a2a] font-bold mt-2">
+                      {COUNCILS.executive.president}
+                    </p>
                   </div>
                   <div className="p-6 bg-[#6f8f2e]/5 rounded-2xl border border-[#6f8f2e]/10">
-                    <span className="text-xs font-bold text-[#6f8f2e] uppercase tracking-widest">Vice-presidente</span>
-                    <p className="text-xl text-[#3a4a2a] font-bold mt-2">{COUNCILS.executive.vicePresident}</p>
+                    <span className="text-xs font-bold text-[#6f8f2e] uppercase tracking-widest">
+                      Vice-presidente
+                    </span>
+                    <p className="text-xl text-[#3a4a2a] font-bold mt-2">
+                      {COUNCILS.executive.vicePresident}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -525,15 +660,22 @@ export default function Home() {
                     <Users size={24} className="text-[#5fb3e6]" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-2xl font-bold text-[#3a4a2a]">{COUNCILS.counselors.title}</h3>
+                    <h3 className="font-serif text-2xl font-bold text-[#3a4a2a]">
+                      {COUNCILS.counselors.title}
+                    </h3>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {COUNCILS.counselors.members.map((member, idx) => (
-                    <div key={idx} className="p-4 bg-[#f9f9f5] rounded-xl border border-[#e8e4d8]/50 flex items-center gap-3">
+                    <div
+                      key={idx}
+                      className="p-4 bg-[#f9f9f5] rounded-xl border border-[#e8e4d8]/50 flex items-center gap-3"
+                    >
                       <div className="w-2 h-2 rounded-full bg-[#8bc34a]" />
-                      <span className="text-[#5a5a4a] font-medium">{member}</span>
+                      <span className="text-[#5a5a4a] font-medium">
+                        {member}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -567,8 +709,12 @@ export default function Home() {
                 <div className="space-y-3">
                   {sector.hours.map((hour, i) => (
                     <div key={i} className="flex justify-between items-start">
-                      <span className="text-sm font-semibold text-[#6f8f2e]">{hour.days}</span>
-                      <span className="text-sm text-[#5a5a4a] text-right">{hour.time}</span>
+                      <span className="text-sm font-semibold text-[#6f8f2e]">
+                        {hour.days}
+                      </span>
+                      <span className="text-sm text-[#5a5a4a] text-right">
+                        {hour.time}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -599,7 +745,8 @@ export default function Home() {
               Venha nos visitar
             </h2>
             <p className="text-white/80 text-lg max-w-2xl mx-auto mb-8">
-              Estamos prontos para atender você e sua família. Entre em contato ou visite uma de nossas lojas.
+              Estamos prontos para atender você e sua família. Entre em contato
+              ou visite uma de nossas lojas.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a
@@ -615,7 +762,7 @@ export default function Home() {
                 className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold rounded-full border border-white/20 transition-all duration-300"
               >
                 <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                 </svg>
                 WhatsApp
               </a>
