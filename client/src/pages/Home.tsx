@@ -112,18 +112,22 @@ export default function Home() {
               Desde 1993 no coração do Alto Uruguai
             </motion.span>
 
-            <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-4 mb-8">
-              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] lg:flex-[2]">
-                Nossa missão é {" "}
-                <span className="text-[#b7d97a]">Inspirar</span> pessoas a{" "}
-                <span className="text-[#8fd3f4]">cooperar</span> para{" "}
-                <span className="text-[#b7d97a]">evoluir</span>
-              </h1>
-              <div className="shrink-0 order-last lg:order-none flex justify-center lg:justify-end lg:flex-1">
+            <div className="flex flex-col lg:flex-row lg:items-center mb-8 relative">
+              <div className="lg:w-3/4 z-10">
+                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1]">
+                  Nossa missão é {" "}
+                  <span className="text-[#b7d97a]">Inspirar</span> pessoas a{" "}
+                  <span className="text-[#8fd3f4]">cooperar</span> para{" "}
+                  <span className="text-[#b7d97a]">evoluir</span>
+                </h1>
+              </div>
+              
+              {/* Logo - Mobile: Abaixo do texto / Desktop: Absoluta no fim da tela à direita */}
+              <div className="mt-8 lg:mt-0 lg:absolute lg:-right-24 lg:top-1/2 lg:-translate-y-1/2 shrink-0 flex justify-center lg:justify-end">
                 <img 
                   src={IMAGES.logo} 
                   alt="Logo Cooperval" 
-                  className="h-36 sm:h-52 md:h-72 lg:h-[500px] w-auto max-w-full object-contain drop-shadow-2xl transition-all duration-500 hover:scale-105 lg:translate-x-12"
+                  className="h-40 sm:h-56 md:h-72 lg:h-[850px] w-auto max-w-none object-contain drop-shadow-2xl transition-all duration-700 opacity-90 lg:opacity-100"
                 />
               </div>
             </div>
