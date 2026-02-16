@@ -112,8 +112,8 @@ export default function Home() {
               Desde 1993 no coração do Alto Uruguai
             </motion.span>
 
-            <div className="flex flex-col lg:flex-row lg:items-center mb-8 relative">
-              <div className="lg:w-3/4 z-10">
+            <div className="flex flex-col lg:flex-row lg:items-center mb-8">
+              <div className="lg:w-3/5 z-10">
                 <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1]">
                   Nossa missão é {" "}
                   <span className="text-[#b7d97a]">Inspirar</span> pessoas a{" "}
@@ -122,12 +122,12 @@ export default function Home() {
                 </h1>
               </div>
               
-              {/* Logo - Mobile: Abaixo do texto / Desktop: Absoluta no fim da tela à direita */}
-              <div className="mt-8 lg:mt-0 lg:absolute lg:-right-24 lg:top-1/2 lg:-translate-y-1/2 shrink-0 flex justify-center lg:justify-end">
+              {/* Logo - Mobile: Abaixo do texto / Desktop: Fixa na extremidade direita da tela */}
+              <div className="mt-8 lg:mt-0 lg:fixed lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-1/4 shrink-0 flex justify-center lg:justify-end pointer-events-none">
                 <img 
                   src={IMAGES.logo} 
                   alt="Logo Cooperval" 
-                  className="h-40 sm:h-56 md:h-72 lg:h-[850px] w-auto max-w-none object-contain drop-shadow-2xl transition-all duration-700 opacity-90 lg:opacity-100"
+                  className="h-40 sm:h-56 md:h-72 lg:h-[680px] w-auto max-w-none object-contain drop-shadow-2xl transition-all duration-700 opacity-90 lg:opacity-80"
                 />
               </div>
             </div>
