@@ -96,17 +96,17 @@ export default function Footer() {
               <img
                 src={IMAGES.logoDetec}
                 alt="DETEC Cooperval"
-                className="h-35 w-auto rounded-lg"
+                className="h-20 w-auto rounded-lg"
               />
               <img
                 src={IMAGES.logoNutricao}
                 alt="Nutrição Cooperval"
-                className="h-45 w-auto"
+                className="h-35 w-auto"
               />
               <img
                 src={IMAGES.soucoop}
                 alt="Certificado soucoop"
-                className="h-45 w-auto bg-white/10 p-2 rounded-lg"
+                className="h-10 w-auto bg-white/10 p-2 rounded-lg"
               />
             </div>
           </div>
