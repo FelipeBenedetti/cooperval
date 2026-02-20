@@ -15,6 +15,8 @@ import barao from '../assets/barao.jpeg'
 import benjamin from '../assets/Benjamin Constant Do Sul.jpeg'
 import faxinalzinho from '../assets/Faxinalzinho.jpeg'
 import itatiba from '../assets/Itatiba do Sul.jpeg'
+import { Building2, Milk, Warehouse, Factory} from "lucide-react";
+
 
 export const IMAGES = {
   logo,
@@ -27,6 +29,24 @@ export const IMAGES = {
   market,
   contact,
 };
+
+export const timeline = [
+  { year: "1993", title: "Fundação", desc: "Após a falência da estatal Coorlac, um grupo de agricultores corajosos funda a Cooperval em 16 de junho." },
+  { year: "1994", title: "Captação de Leite", desc: "Início das atividades com foco na captação e comercialização de leite in natura." },
+  { year: "1996", title: "Expansão", desc: "Ampliação para venda de insumos agropecuários, produtos de mercado e serviços técnicos." },
+  { year: "2004", title: "Agropecuária", desc: "Abertura da primeira filial agropecuária." },
+  { year: "2014", title: "Comercialização Direta", desc: "A cooperativa passa a administrar diretamente a comercialização de leite, tornando-se mais sólida." },
+  { year: "2020", title: "Modernização", desc: "Investimentos em infraestrutura moderna e abertura de novos pontos de atendimento." },
+  { year: "Hoje", title: "Consolidação", desc: "Mais de 50 colaboradores, 9 pontos de atendimento em 6 municípios, abrangendo 27 municípios do RS." },
+];
+
+export const structures = [
+  { icon: Building2, title: "Sede Administrativa", location: "Erval Grande", desc: "Mercado, agropecuária, setor técnico e administrativo" },
+  { icon: Milk, title: "Posto de Recebimento de Leite", location: "Erval Grande", desc: "Captação e resfriamento de leite" },
+  { icon: Warehouse, title: "Centro de Distribuição", location: "Erval Grande", desc: "Distribuição de insumos agropecuários" },
+  { icon: Factory, title: "Fábrica de Rações e Cereais", location: "Benjamin Constant do Sul", desc: "Produção de rações e recebimento de cereais" },
+];
+
 
 export const STORES = [
   {

@@ -3,26 +3,11 @@
  * Quem Somos: História da Cooperval, missão, valores, estrutura física e timeline
  */
 import { motion } from "framer-motion";
-import { Building2, Milk, Warehouse, Factory, Heart, Target, Eye } from "lucide-react";
+import { Heart, Target, Eye } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import WaveDivider from "@/components/WaveDivider";
+import { timeline, structures } from "../lib/constants";
 import { IMAGES, STATS } from "@/lib/constants";
-
-const timeline = [
-  { year: "1993", title: "Fundação", desc: "Após a falência da estatal Coorlac, um grupo de agricultores corajosos funda a Cooperval em 16 de junho." },
-  { year: "1994", title: "Captação de Leite", desc: "Início das atividades com foco na captação e comercialização de leite in natura." },
-  { year: "2000", title: "Expansão", desc: "Ampliação para venda de insumos agropecuários, produtos de mercado e serviços técnicos." },
-  { year: "2010", title: "Comercialização Direta", desc: "A cooperativa passa a administrar diretamente a comercialização de leite, tornando-se mais sólida." },
-  { year: "2020", title: "Modernização", desc: "Investimentos em infraestrutura moderna e abertura de novos pontos de atendimento." },
-  { year: "Hoje", title: "Consolidação", desc: "Mais de 50 colaboradores, 9 pontos de atendimento em 6 municípios, abrangendo 27 municípios do RS." },
-];
-
-const structures = [
-  { icon: Building2, title: "Sede Administrativa", location: "Erval Grande", desc: "Mercado, agropecuária, setor técnico e administrativo" },
-  { icon: Milk, title: "Posto de Recebimento de Leite", location: "Erval Grande", desc: "Captação e resfriamento de leite" },
-  { icon: Warehouse, title: "Centro de Distribuição", location: "Erval Grande", desc: "Distribuição de insumos agropecuários" },
-  { icon: Factory, title: "Fábrica de Rações e Cereais", location: "Benjamin Constant do Sul", desc: "Produção de rações e recebimento de cereais" },
-];
 
 export default function QuemSomos() {
   return (
