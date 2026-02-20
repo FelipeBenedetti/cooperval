@@ -92,21 +92,21 @@ export default function Footer() {
             <h4 className="font-serif text-lg font-semibold mb-4 text-[#b7d97a]">
               Nossos Selos
             </h4>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap items-center gap-6">
               <img
                 src={IMAGES.logoDetec}
                 alt="DETEC Cooperval"
-                className="h-20 w-auto rounded-lg"
+                className="h-14 w-auto object-contain"
               />
               <img
                 src={IMAGES.logoNutricao}
                 alt="Nutrição Cooperval"
-                className="h-35 w-auto"
+                className="h-24 w-auto object-contain"
               />
               <img
                 src={IMAGES.soucoop}
                 alt="Certificado soucoop"
-                className="h-10 w-auto bg-white/10 p-2 rounded-lg"
+                className="h-14 w-auto object-contain bg-white/10 p-2 rounded-lg"
               />
             </div>
           </div>
