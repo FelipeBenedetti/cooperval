@@ -1,9 +1,10 @@
 // Cooperval - Constantes do site
 // URLs de imagens e dados estáticos
+import { Building2, Milk, Warehouse, Factory} from "lucide-react";
 import logo from '../assets/logo.png'
 import logoDetec from '../assets/detec.png'
 import logoNutricao from '../assets/nutricao.png'
-import soucoop from '../assets/somoscoop.jpg'
+import soucoop from '../assets/somoscoop2.jpg'
 import hero from '../assets/hero.webp'
 import about from '../assets/about.png'
 import agro from '../assets/agro.webp'
@@ -15,7 +16,6 @@ import barao from '../assets/barao.jpeg'
 import benjamin from '../assets/Benjamin Constant Do Sul.jpeg'
 import faxinalzinho from '../assets/Faxinalzinho.jpeg'
 import itatiba from '../assets/Itatiba do Sul.jpeg'
-import { Building2, Milk, Warehouse, Factory} from "lucide-react";
 
 
 export const IMAGES = {
