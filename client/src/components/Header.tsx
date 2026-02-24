@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/quem-somos", label: "Quem Somos" },
   { href: "/#servicos", label: "Serviços" },
   { href: "/#lojas", label: "Nossas Lojas" },
+  { href: "/noticias", label: "Notícias" },
   { href: "/contato", label: "Contato" },
 ];
 
