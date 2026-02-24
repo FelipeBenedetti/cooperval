@@ -49,11 +49,20 @@ export default function AdminPanelPage() {
 
   const handleDeleteNews = async (id: string) => {
     try {
+      // Executar o delete
       await sanityClient.delete(id);
+      
+      // Remover imediatamente da lista local
       setNews(news.filter((n) => n._id !== id));
       setDeleteConfirm(null);
+      
+      // Recarregar a lista após um pequeno delay para garantir sincronização
+      setTimeout(() => {
+        loadNews();
+      }, 500);
     } catch (error) {
       console.error("Erro ao deletar notícia:", error);
+      alert("Erro ao deletar notícia. Tente novamente.");
     }
   };
 
