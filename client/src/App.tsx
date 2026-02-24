@@ -1,9 +1,9 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { Route, Switch } from "wouter";
+import NotFound from "@/pages/NotFound";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import QuemSomos from "./pages/QuemSomos";
 import Contato from "./pages/Contato";
