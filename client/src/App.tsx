@@ -9,6 +9,7 @@ import QuemSomos from "./pages/QuemSomos";
 import Contato from "./pages/Contato";
 import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
+import Promotions from "./pages/Promotions";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import Header from "./components/Header";
@@ -23,6 +24,7 @@ function Router() {
       <Route path={"/contato"} component={Contato} />
       <Route path={"/noticias"} component={News} />
       <Route path={"/noticias/:slug"} component={NewsDetail} />
+      <Route path={"/promocoes"} component={Promotions} />
       <Route path={"/admin/login"} component={AdminLogin} />
       <Route path={"/admin"} component={AdminPanel} />
       <Route path={"/404"} component={NotFound} />
