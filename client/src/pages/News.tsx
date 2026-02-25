@@ -58,7 +58,7 @@ export default function NewsPage() {
   return (
     <div className="min-h-screen bg-[#faf8f2]">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#6f8f2e] to-[#5a7a25] py-20 md:py-28 text-white">
+      <section className="relative bg-gradient-to-br from-[#6f8f2e] to-[#5a7a25] py-20 md:py-28 pt-32 lg:pt-40 text-white">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

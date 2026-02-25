@@ -40,7 +40,7 @@ export default function PromotionsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-[#8bc34a] to-[#6f8f2e] text-white py-16">
+      <section className="bg-gradient-to-r from-[#8bc34a] to-[#6f8f2e] text-white py-16 pt-32 lg:pt-40">
         <div className="container">
           <div className="flex items-center gap-4 mb-4">
             <ShoppingCart size={40} />
