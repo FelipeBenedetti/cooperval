@@ -17,6 +17,10 @@ import benjamin from '../assets/Benjamin Constant Do Sul.jpeg'
 import faxinalzinho from '../assets/Faxinalzinho.jpeg'
 import itatiba from '../assets/Itatiba do Sul.jpeg'
 
+import fabricaderacao from '../assets/fabricaderacoes.jpeg'
+import mercado from '../assets/mercado.jpeg'
+import recolhimentoerecebimento from '../assets/recolhimentoerecebimento.jpeg'
+import agropecuaria from '../assets/agropecuaria.jpeg'
 
 export const IMAGES = {
   logo,
@@ -28,6 +32,10 @@ export const IMAGES = {
   agro,
   market,
   contact,
+  fabricaderacao,
+  mercado,
+  recolhimentoerecebimento,
+  agropecuaria,
 };
 
 export const timeline = [
