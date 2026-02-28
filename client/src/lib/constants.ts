@@ -150,6 +150,7 @@ export const SERVICES = [
     image: logoDetec,
     description: "Produção própria de rações para bovinos, suínos, aves e ovinos com a marca Nutrição Cooperval. Foco principal da empresa em qualidade e nutrição animal.",
     featured: false,
+    imageSize: "h-22"
   },
   {
     icon: "ShoppingCart",
