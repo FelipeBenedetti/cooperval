@@ -1,0 +1,1604 @@
+diff --git a/client/src/App.tsx b/client/src/App.tsx
+index be446e8..979d778 100644
+--- a/client/src/App.tsx
++++ b/client/src/App.tsx
+@@ -12,6 +12,8 @@ import Contato from "./pages/Contato";
+ import News from "./pages/News";
+ import NewsDetail from "./pages/NewsDetail";
+ import Promotions from "./pages/Promotions";
++import ParliamentaryAmendments from "./pages/ParliamentaryAmendments";
++import ParliamentaryAmendmentDetail from "./pages/ParliamentaryAmendmentDetail";
+ import AdminLogin from "./pages/AdminLogin";
+ import AdminPanel from "./pages/AdminPanel";
+ import Header from "./components/Header";
+@@ -19,6 +21,12 @@ import Footer from "./components/Footer";
+ import WhatsAppFloat from "./components/WhatsAppFloat";
+ import { useLocation } from "wouter";
+ 
++declare global {
++  interface Window {
++    gtag?: (...args: unknown[]) => void;
++  }
++}
++
+ function Router() {
+   return (
+     <Switch>
+@@ -28,6 +36,14 @@ function Router() {
+       <Route path={"/noticias"} component={News} />
+       <Route path={"/noticias/:slug"} component={NewsDetail} />
+       <Route path={"/promocoes"} component={Promotions} />
++      <Route
++        path={"/emendas-parlamentares"}
++        component={ParliamentaryAmendments}
++      />
++      <Route
++        path={"/emendas-parlamentares/:slug"}
++        component={ParliamentaryAmendmentDetail}
++      />
+       <Route path={"/admin/login"} component={AdminLogin} />
+       <Route path={"/admin"} component={AdminPanel} />
+       <Route path={"/404"} component={NotFound} />
+diff --git a/client/src/components/Header.tsx b/client/src/components/Header.tsx
+index a7e1309..3245d04 100644
+--- a/client/src/components/Header.tsx
++++ b/client/src/components/Header.tsx
+@@ -9,7 +9,8 @@ import { Link, useLocation } from "wouter";
+ import { Menu, X } from "lucide-react";
+ import { motion, AnimatePresence } from "framer-motion";
+ 
+-const LOGO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029066893/vPpEKCFaDDJJpPSl.png";
++const LOGO_URL =
++  "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029066893/vPpEKCFaDDJJpPSl.png";
+ 
+ const navLinks = [
+   { href: "/", label: "Início" },
+@@ -17,6 +18,7 @@ const navLinks = [
+   { href: "/#servicos", label: "Serviços" },
+   { href: "/#lojas", label: "Nossas Lojas" },
+   { href: "/noticias", label: "Notícias" },
++  { href: "/emendas-parlamentares", label: "Emendas Parlamentares" },
+   { href: "/promocoes", label: "Promoções" },
+   { href: "/contato", label: "Contato" },
+ ];
+@@ -57,7 +59,7 @@ export default function Header() {
+         {/* Logo (Removida conforme solicitado, mantendo apenas o link de texto para acessibilidade/navegação se desejar, ou removendo tudo) */}
+         <Link href="/" className="flex items-center gap-3 shrink-0">
+           <span
+-              className={`font-serif text-xl lg:text-2xl font-bold text-white`}
++            className={`font-serif text-xl lg:text-2xl font-bold text-white`}
+           >
+             Cooperval
+           </span>
+@@ -65,13 +67,16 @@ export default function Header() {
+ 
+         {/* Desktop Nav */}
+         <nav className="hidden lg:flex items-center gap-1">
+-          {navLinks.map((link) => {
+-            const isActive = location === link.href || (link.href !== "/" && location.startsWith(link.href.replace("/#", "/")));
++          {navLinks.map(link => {
++            const isActive =
++              location === link.href ||
++              (link.href !== "/" &&
++                location.startsWith(link.href.replace("/#", "/")));
+             return (
+               <a
+                 key={link.href}
+                 href={link.href}
+-                onClick={(e) => {
++                onClick={e => {
+                   if (link.href.startsWith("/#")) {
+                     e.preventDefault();
+                     handleNavClick(link.href);
+@@ -109,11 +114,11 @@ export default function Header() {
+             className="lg:hidden bg-[#faf8f2]/98 backdrop-blur-lg border-t border-[#6f8f2e]/10 overflow-hidden"
+           >
+             <nav className="container py-4 flex flex-col gap-1">
+-              {navLinks.map((link) => (
++              {navLinks.map(link => (
+                 <a
+                   key={link.href}
+                   href={link.href}
+-                  onClick={(e) => {
++                  onClick={e => {
+                     if (link.href.startsWith("/#")) {
+                       e.preventDefault();
+                       handleNavClick(link.href);
+diff --git a/client/src/lib/sanity.ts b/client/src/lib/sanity.ts
+index d8c076f..45bd6d6 100644
+--- a/client/src/lib/sanity.ts
++++ b/client/src/lib/sanity.ts
+@@ -44,6 +44,19 @@ export interface News {
+   category?: string;
+ }
+ 
++export interface ParliamentaryAmendment {
++  _id: string;
++  _type: "parliamentaryAmendment";
++  title: string;
++  slug: { current: string };
++  excerpt: string;
++  content: any;
++  images: NewsImage[];
++  publishedAt: string;
++  author?: string;
++  category?: string;
++}
++
+ // Tipos para Promoções
+ export interface Promotion {
+   _id: string;
+@@ -76,7 +89,9 @@ export const newsQueries = {
+   }`,
+ 
+   // Obter notícia por slug
+-  newsBySlug: (slug: string) => `*[_type == "news" && slug.current == "${slug}"][0] {
++  newsBySlug: (
++    slug: string
++  ) => `*[_type == "news" && slug.current == "${slug}"][0] {
+     _id,
+     title,
+     slug,
+@@ -101,7 +116,9 @@ export const newsQueries = {
+   }`,
+ 
+   // Obter notícias por categoria
+-  newsByCategory: (category: string) => `*[_type == "news" && category == "${category}"] | order(publishedAt desc) {
++  newsByCategory: (
++    category: string
++  ) => `*[_type == "news" && category == "${category}"] | order(publishedAt desc) {
+     _id,
+     title,
+     slug,
+@@ -130,7 +147,9 @@ export const promotionQueries = {
+   }`,
+ 
+   // Obter promoção por slug
+-  promotionBySlug: (slug: string) => `*[_type == "promotion" && slug.current == "${slug}"][0] {
++  promotionBySlug: (
++    slug: string
++  ) => `*[_type == "promotion" && slug.current == "${slug}"][0] {
+     _id,
+     productName,
+     slug,
+@@ -158,7 +177,9 @@ export const promotionQueries = {
+   }`,
+ 
+   // Obter promoções por categoria
+-  promotionsByCategory: (category: string) => `*[_type == "promotion" && category == "${category}" && validUntil >= now()] | order(validUntil asc) {
++  promotionsByCategory: (
++    category: string
++  ) => `*[_type == "promotion" && category == "${category}" && validUntil >= now()] | order(validUntil asc) {
+     _id,
+     productName,
+     slug,
+@@ -172,6 +193,17 @@ export const promotionQueries = {
+   }`,
+ };
+ 
++export const parliamentaryAmendmentQueries = {
++  all: `*[_type == "parliamentaryAmendment"] | order(publishedAt desc) {
++    _id, title, slug, excerpt, publishedAt, images, author, category
++  }`,
++  bySlug: (
++    slug: string
++  ) => `*[_type == "parliamentaryAmendment" && slug.current == "${slug}"][0] {
++    _id, title, slug, excerpt, content, publishedAt, images, author, category
++  }`,
++};
++
+ // Funções auxiliares para fetching
+ export const fetchNews = async (): Promise<News[]> => {
+   try {
+@@ -203,6 +235,28 @@ export const fetchRecentNews = async (): Promise<News[]> => {
+   }
+ };
+ 
++export const fetchParliamentaryAmendments = async (): Promise<
++  ParliamentaryAmendment[]
++> => {
++  try {
++    return (await sanityClient.fetch(parliamentaryAmendmentQueries.all)) || [];
++  } catch (error) {
++    console.error("Erro ao buscar emendas parlamentares:", error);
++    return [];
++  }
++};
++
++export const fetchParliamentaryAmendmentBySlug = async (
++  slug: string
++): Promise<ParliamentaryAmendment | null> => {
++  try {
++    return await sanityClient.fetch(parliamentaryAmendmentQueries.bySlug(slug));
++  } catch (error) {
++    console.error("Erro ao buscar emenda parlamentar:", error);
++    return null;
++  }
++};
++
+ // Funções auxiliares para Promoções
+ export const fetchPromotions = async (): Promise<Promotion[]> => {
+   try {
+@@ -214,9 +268,13 @@ export const fetchPromotions = async (): Promise<Promotion[]> => {
+   }
+ };
+ 
+-export const fetchPromotionBySlug = async (slug: string): Promise<Promotion | null> => {
++export const fetchPromotionBySlug = async (
++  slug: string
++): Promise<Promotion | null> => {
+   try {
+-    const data = await sanityClient.fetch(promotionQueries.promotionBySlug(slug));
++    const data = await sanityClient.fetch(
++      promotionQueries.promotionBySlug(slug)
++    );
+     return data;
+   } catch (error) {
+     console.error("Erro ao buscar promoção:", error);
+diff --git a/client/src/pages/AdminPanel.tsx b/client/src/pages/AdminPanel.tsx
+index 1675fc4..2f9b1ec 100644
+--- a/client/src/pages/AdminPanel.tsx
++++ b/client/src/pages/AdminPanel.tsx
+@@ -14,23 +14,41 @@ import {
+   DollarSign,
+ } from "lucide-react";
+ import { useAuthStore } from "@/stores/authStore";
+-import { sanityClient, News, Promotion } from "@/lib/sanity";
++import {
++  sanityClient,
++  News,
++  Promotion,
++  ParliamentaryAmendment,
++} from "@/lib/sanity";
+ import NewsForm from "@/components/NewsForm";
+ import PromotionForm from "@/components/PromotionForm";
++import ParliamentaryAmendmentForm from "@/components/ParliamentaryAmendmentForm";
+ 
+ export default function AdminPanelPage() {
+   const { user, logout, isAuthenticated } = useAuthStore();
+   const [, navigate] = useLocation();
+   const [news, setNews] = useState<News[]>([]);
+   const [promotions, setPromotions] = useState<Promotion[]>([]);
++  const [amendments, setAmendments] = useState<ParliamentaryAmendment[]>([]);
+   const [loading, setLoading] = useState(true);
+   const [searchTerm, setSearchTerm] = useState("");
+   const [showForm, setShowForm] = useState(false);
+   const [editingNews, setEditingNews] = useState<News | null>(null);
+-  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
++  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(
++    null
++  );
++  const [editingAmendment, setEditingAmendment] =
++    useState<ParliamentaryAmendment | null>(null);
+   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+-  const [deleteConfirmPromotion, setDeleteConfirmPromotion] = useState<string | null>(null);
+-  const [activeTab, setActiveTab] = useState<"news" | "promotions">("news");
++  const [deleteConfirmPromotion, setDeleteConfirmPromotion] = useState<
++    string | null
++  >(null);
++  const [deleteConfirmAmendment, setDeleteConfirmAmendment] = useState<
++    string | null
++  >(null);
++  const [activeTab, setActiveTab] = useState<
++    "news" | "promotions" | "amendments"
++  >("news");
+ 
+   useEffect(() => {
+     if (!isAuthenticated) {
+@@ -41,15 +59,19 @@ export default function AdminPanelPage() {
+   useEffect(() => {
+     if (activeTab === "news") {
+       loadNews();
+-    } else {
++    } else if (activeTab === "promotions") {
+       loadPromotions();
++    } else {
++      loadAmendments();
+     }
+   }, [activeTab]);
+ 
+   const loadNews = async () => {
+     try {
+       setLoading(true);
+-      const data = await sanityClient.fetch(`*[_type == "news"] | order(publishedAt desc)`);
++      const data = await sanityClient.fetch(
++        `*[_type == "news"] | order(publishedAt desc)`
++      );
+       setNews(data || []);
+     } catch (error) {
+       console.error("Erro ao carregar notícias:", error);
+@@ -61,7 +83,9 @@ export default function AdminPanelPage() {
+   const loadPromotions = async () => {
+     try {
+       setLoading(true);
+-      const data = await sanityClient.fetch(`*[_type == "promotion"] | order(validUntil desc)`);
++      const data = await sanityClient.fetch(
++        `*[_type == "promotion"] | order(validUntil desc)`
++      );
+       setPromotions(data || []);
+     } catch (error) {
+       console.error("Erro ao carregar promoções:", error);
+@@ -70,10 +94,24 @@ export default function AdminPanelPage() {
+     }
+   };
+ 
++  const loadAmendments = async () => {
++    try {
++      setLoading(true);
++      const data = await sanityClient.fetch(
++        `*[_type == "parliamentaryAmendment"] | order(publishedAt desc)`
++      );
++      setAmendments(data || []);
++    } catch (error) {
++      console.error("Erro ao carregar emendas parlamentares:", error);
++    } finally {
++      setLoading(false);
++    }
++  };
++
+   const handleDeleteNews = async (id: string) => {
+     try {
+       await sanityClient.delete(id);
+-      setNews(news.filter((n) => n._id !== id));
++      setNews(news.filter(n => n._id !== id));
+       setDeleteConfirm(null);
+       setTimeout(() => {
+         loadNews();
+@@ -87,7 +125,7 @@ export default function AdminPanelPage() {
+   const handleDeletePromotion = async (id: string) => {
+     try {
+       await sanityClient.delete(id);
+-      setPromotions(promotions.filter((p) => p._id !== id));
++      setPromotions(promotions.filter(p => p._id !== id));
+       setDeleteConfirmPromotion(null);
+       setTimeout(() => {
+         loadPromotions();
+@@ -98,23 +136,41 @@ export default function AdminPanelPage() {
+     }
+   };
+ 
++  const handleDeleteAmendment = async (id: string) => {
++    try {
++      await sanityClient.delete(id);
++      setAmendments(amendments.filter(item => item._id !== id));
++      setDeleteConfirmAmendment(null);
++      loadAmendments();
++    } catch (error) {
++      console.error("Erro ao deletar emenda parlamentar:", error);
++      alert("Erro ao deletar emenda parlamentar. Tente novamente.");
++    }
++  };
++
+   const handleLogout = () => {
+     logout();
+     navigate("/");
+   };
+ 
+   const filteredNews = news.filter(
+-    (item) =>
++    item =>
+       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       item.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+   );
+ 
+   const filteredPromotions = promotions.filter(
+-    (item) =>
++    item =>
+       item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       item.description.toLowerCase().includes(searchTerm.toLowerCase())
+   );
+ 
++  const filteredAmendments = amendments.filter(
++    item =>
++      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
++      item.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
++  );
++
+   if (!isAuthenticated) {
+     return null;
+   }
+@@ -128,9 +184,7 @@ export default function AdminPanelPage() {
+             <h1 className="font-serif text-2xl font-bold text-[#3a4a2a]">
+               Painel de Administração
+             </h1>
+-            <p className="text-sm text-[#5a5a4a]">
+-              Bem-vindo, {user?.name}
+-            </p>
++            <p className="text-sm text-[#5a5a4a]">Bem-vindo, {user?.name}</p>
+           </div>
+           <button
+             onClick={handleLogout}
+@@ -154,9 +208,13 @@ export default function AdminPanelPage() {
+             />
+             <input
+               type="text"
+-              placeholder={activeTab === "news" ? "Pesquisar notícias..." : "Pesquisar promoções..."}
++              placeholder={
++                activeTab === "news"
++                  ? "Pesquisar notícias..."
++                  : "Pesquisar promoções..."
++              }
+               value={searchTerm}
+-              onChange={(e) => setSearchTerm(e.target.value)}
++              onChange={e => setSearchTerm(e.target.value)}
+               className="w-full pl-10 pr-4 py-3 border border-[#e8e4d8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8bc34a]"
+             />
+           </div>
+@@ -166,15 +224,21 @@ export default function AdminPanelPage() {
+             onClick={() => {
+               if (activeTab === "news") {
+                 setEditingNews(null);
+-              } else {
++              } else if (activeTab === "promotions") {
+                 setEditingPromotion(null);
++              } else {
++                setEditingAmendment(null);
+               }
+               setShowForm(true);
+             }}
+             className="inline-flex items-center gap-2 px-6 py-3 bg-[#8bc34a] hover:bg-[#7ab030] text-white font-semibold rounded-lg transition-all"
+           >
+             <Plus size={18} />
+-            {activeTab === "news" ? "Nova Notícia" : "Nova Promoção"}
++            {activeTab === "news"
++              ? "Nova Notícia"
++              : activeTab === "promotions"
++                ? "Nova Promoção"
++                : "Nova Emenda Parlamentar"}
+           </button>
+         </div>
+ 
+@@ -200,6 +264,16 @@ export default function AdminPanelPage() {
+           >
+             Promoções
+           </button>
++          <button
++            onClick={() => setActiveTab("amendments")}
++            className={`px-6 py-3 font-semibold transition-colors ${
++              activeTab === "amendments"
++                ? "text-[#8bc34a] border-b-2 border-[#8bc34a]"
++                : "text-[#5a5a4a] hover:text-[#3a4a2a]"
++            }`}
++          >
++            Emendas Parlamentares
++          </button>
+         </div>
+ 
+         {/* Form Modal */}
+@@ -228,7 +302,7 @@ export default function AdminPanelPage() {
+                     loadNews();
+                   }}
+                 />
+-              ) : (
++              ) : activeTab === "promotions" ? (
+                 <PromotionForm
+                   promotion={editingPromotion}
+                   onClose={() => {
+@@ -241,6 +315,19 @@ export default function AdminPanelPage() {
+                     loadPromotions();
+                   }}
+                 />
++              ) : (
++                <ParliamentaryAmendmentForm
++                  amendment={editingAmendment}
++                  onClose={() => {
++                    setShowForm(false);
++                    setEditingAmendment(null);
++                  }}
++                  onSuccess={() => {
++                    setShowForm(false);
++                    setEditingAmendment(null);
++                    loadAmendments();
++                  }}
++                />
+               )}
+             </motion.div>
+           </motion.div>
+@@ -258,9 +345,14 @@ export default function AdminPanelPage() {
+                 </div>
+               ) : filteredNews.length === 0 ? (
+                 <div className="text-center py-12 bg-white rounded-lg border border-[#e8e4d8]">
+-                  <FileText size={48} className="mx-auto mb-4 text-[#8bc34a]/30" />
++                  <FileText
++                    size={48}
++                    className="mx-auto mb-4 text-[#8bc34a]/30"
++                  />
+                   <p className="text-[#5a5a4a] text-lg font-medium">
+-                    {searchTerm ? "Nenhuma notícia encontrada" : "Nenhuma notícia publicada"}
++                    {searchTerm
++                      ? "Nenhuma notícia encontrada"
++                      : "Nenhuma notícia publicada"}
+                   </p>
+                 </div>
+               ) : (
+@@ -284,7 +376,9 @@ export default function AdminPanelPage() {
+                         <div className="flex items-center gap-4 text-xs text-[#6a6a5a]">
+                           <div className="flex items-center gap-1">
+                             <Calendar size={14} />
+-                            {new Date(item.publishedAt).toLocaleDateString("pt-BR")}
++                            {new Date(item.publishedAt).toLocaleDateString(
++                              "pt-BR"
++                            )}
+                           </div>
+                           {item.category && (
+                             <div className="px-2 py-1 bg-[#8bc34a]/10 text-[#6f8f2e] rounded">
+@@ -297,7 +391,12 @@ export default function AdminPanelPage() {
+                       {/* Actions */}
+                       <div className="flex gap-2 w-full md:w-auto">
+                         <button
+-                          onClick={() => window.open(`/noticias/${item.slug.current}`, "_blank")}
++                          onClick={() =>
++                            window.open(
++                              `/noticias/${item.slug.current}`,
++                              "_blank"
++                            )
++                          }
+                           className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors"
+                           title="Visualizar"
+                         >
+@@ -356,7 +455,7 @@ export default function AdminPanelPage() {
+                 ))
+               )}
+             </>
+-          ) : (
++          ) : activeTab === "promotions" ? (
+             // Promotions List
+             <>
+               {loading ? (
+@@ -366,9 +465,14 @@ export default function AdminPanelPage() {
+                 </div>
+               ) : filteredPromotions.length === 0 ? (
+                 <div className="text-center py-12 bg-white rounded-lg border border-[#e8e4d8]">
+-                  <ShoppingCart size={48} className="mx-auto mb-4 text-[#8bc34a]/30" />
++                  <ShoppingCart
++                    size={48}
++                    className="mx-auto mb-4 text-[#8bc34a]/30"
++                  />
+                   <p className="text-[#5a5a4a] text-lg font-medium">
+-                    {searchTerm ? "Nenhuma promoção encontrada" : "Nenhuma promoção publicada"}
++                    {searchTerm
++                      ? "Nenhuma promoção encontrada"
++                      : "Nenhuma promoção publicada"}
+                   </p>
+                 </div>
+               ) : (
+@@ -401,7 +505,9 @@ export default function AdminPanelPage() {
+                           )}
+                           <div className="flex items-center gap-1">
+                             <Calendar size={14} />
+-                            {new Date(item.validUntil).toLocaleDateString("pt-BR")}
++                            {new Date(item.validUntil).toLocaleDateString(
++                              "pt-BR"
++                            )}
+                           </div>
+                         </div>
+                       </div>
+@@ -460,6 +566,109 @@ export default function AdminPanelPage() {
+                 ))
+               )}
+             </>
++          ) : (
++            <>
++              {loading ? (
++                <div className="text-center py-12">
++                  <div className="w-12 h-12 border-4 border-[#8bc34a] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
++                  <p className="text-[#5a5a4a]">
++                    Carregando emendas parlamentares...
++                  </p>
++                </div>
++              ) : filteredAmendments.length === 0 ? (
++                <div className="text-center py-12 bg-white rounded-lg border border-[#e8e4d8]">
++                  <FileText
++                    size={48}
++                    className="mx-auto mb-4 text-[#8bc34a]/30"
++                  />
++                  <p className="text-[#5a5a4a] text-lg font-medium">
++                    {searchTerm
++                      ? "Nenhuma emenda encontrada"
++                      : "Nenhuma emenda parlamentar publicada"}
++                  </p>
++                </div>
++              ) : (
++                filteredAmendments.map((item, index) => (
++                  <motion.div
++                    key={item._id}
++                    initial={{ opacity: 0, y: 10 }}
++                    animate={{ opacity: 1, y: 0 }}
++                    transition={{ delay: index * 0.05 }}
++                    className="bg-white rounded-lg border border-[#e8e4d8] p-6 hover:shadow-md transition-shadow"
++                  >
++                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
++                      <div className="flex-1 min-w-0">
++                        <h3 className="font-serif text-lg font-bold text-[#3a4a2a] mb-2 line-clamp-2">
++                          {item.title}
++                        </h3>
++                        <p className="text-sm text-[#5a5a4a] mb-3 line-clamp-2">
++                          {item.excerpt}
++                        </p>
++                        <div className="flex items-center gap-4 text-xs text-[#6a6a5a]">
++                          <div className="flex items-center gap-1">
++                            <Calendar size={14} />
++                            {new Date(item.publishedAt).toLocaleDateString(
++                              "pt-BR"
++                            )}
++                          </div>
++                          {item.category && (
++                            <div className="px-2 py-1 bg-[#8bc34a]/10 text-[#6f8f2e] rounded">
++                              {item.category}
++                            </div>
++                          )}
++                        </div>
++                      </div>
++                      <div className="flex gap-2 w-full md:w-auto">
++                        <button
++                          onClick={() => {
++                            setEditingAmendment(item);
++                            setShowForm(true);
++                          }}
++                          className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#8bc34a]/10 hover:bg-[#8bc34a]/20 text-[#6f8f2e] rounded-lg"
++                          title="Editar"
++                        >
++                          <Edit2 size={16} />
++                          <span className="md:hidden">Editar</span>
++                        </button>
++                        <button
++                          onClick={() => setDeleteConfirmAmendment(item._id)}
++                          className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg"
++                          title="Deletar"
++                        >
++                          <Trash2 size={16} />
++                          <span className="md:hidden">Deletar</span>
++                        </button>
++                      </div>
++                    </div>
++                    {deleteConfirmAmendment === item._id && (
++                      <motion.div
++                        initial={{ opacity: 0, y: -10 }}
++                        animate={{ opacity: 1, y: 0 }}
++                        className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between gap-4"
++                      >
++                        <p className="text-red-700 font-medium">
++                          Tem certeza que deseja deletar esta emenda?
++                        </p>
++                        <div className="flex gap-2">
++                          <button
++                            onClick={() => setDeleteConfirmAmendment(null)}
++                            className="px-3 py-1 bg-white border border-red-200 text-red-600 rounded"
++                          >
++                            Cancelar
++                          </button>
++                          <button
++                            onClick={() => handleDeleteAmendment(item._id)}
++                            className="px-3 py-1 bg-red-600 text-white rounded"
++                          >
++                            Deletar
++                          </button>
++                        </div>
++                      </motion.div>
++                    )}
++                  </motion.div>
++                ))
++              )}
++            </>
+           )}
+         </div>
+       </div>
+diff --git a/client/src/pages/Promotions.tsx b/client/src/pages/Promotions.tsx
+index f0dc23a..c4c590f 100644
+--- a/client/src/pages/Promotions.tsx
++++ b/client/src/pages/Promotions.tsx
+@@ -28,16 +28,17 @@ export default function PromotionsPage() {
+   const categories = Array.from(
+     new Set(
+       promotions
+-        .map((p) => p.category)
++        .map(p => p.category)
+         .filter((category): category is string => Boolean(category))
+     )
+   );
+ 
+   const filteredPromotions = selectedCategory
+-    ? promotions.filter((p) => p.category === selectedCategory)
++    ? promotions.filter(p => p.category === selectedCategory)
+     : promotions;
+ 
+   const calculateDiscount = (original: number, current: number) => {
++    if (original <= 0) return 0;
+     return Math.round(((original - current) / original) * 100);
+   };
+ 
+@@ -56,7 +57,9 @@ export default function PromotionsPage() {
+               Promoções
+             </h1>
+             <p className="text-white/90 text-lg">
+-              Confira as melhores ofertas e promoções especiais da Cooperval. Produtos de qualidade com preços imperdíveis!            </p>
++              Confira as melhores ofertas e promoções especiais da Cooperval.
++              Produtos de qualidade com preços imperdíveis!{" "}
++            </p>
+           </motion.div>
+         </div>
+       </section>
+@@ -72,21 +75,23 @@ export default function PromotionsPage() {
+               <div className="flex flex-wrap gap-3">
+                 <button
+                   onClick={() => setSelectedCategory(null)}
+-                  className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${selectedCategory === null
+-                    ? "bg-[#8bc34a] text-white"
+-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+-                    }`}
++                  className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${
++                    selectedCategory === null
++                      ? "bg-[#8bc34a] text-white"
++                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
++                  }`}
+                 >
+                   Todas
+                 </button>
+-                {categories.map((category) => (
++                {categories.map(category => (
+                   <button
+                     key={category}
+                     onClick={() => setSelectedCategory(category)}
+-                    className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${selectedCategory === category
+-                      ? "bg-[#8bc34a] text-white"
+-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+-                      }`}
++                    className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${
++                      selectedCategory === category
++                        ? "bg-[#8bc34a] text-white"
++                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
++                    }`}
+                   >
+                     {category}
+                   </button>
+@@ -119,7 +124,7 @@ export default function PromotionsPage() {
+                 );
+                 const daysLeft = Math.ceil(
+                   (new Date(promotion.validUntil).getTime() - Date.now()) /
+-                  (1000 * 60 * 60 * 24)
++                    (1000 * 60 * 60 * 24)
+                 );
+ 
+                 return (
+@@ -155,19 +160,22 @@ export default function PromotionsPage() {
+                         {promotion.description}
+                       </p>
+ 
+-                      {/* Prices */}
+-                      <div className="mb-4">
+-                        <div className="flex items-baseline gap-3 mb-2">
+-                          <span className="text-3xl font-bold text-[#8bc34a]">
+-                            R$ {promotion.currentPrice.toFixed(2)}
+-                          </span>
+-                          {promotion.originalPrice > promotion.currentPrice && (
+-                            <span className="text-lg text-gray-500 line-through">
+-                              R$ {promotion.originalPrice.toFixed(2)}
++                      {/* Prices: preço zero significa que a promoção não deve exibir preço */}
++                      {promotion.currentPrice > 0 && (
++                        <div className="mb-4">
++                          <div className="flex items-baseline gap-3 mb-2">
++                            <span className="text-3xl font-bold text-[#8bc34a]">
++                              R$ {promotion.currentPrice.toFixed(2)}
+                             </span>
+-                          )}
++                            {promotion.originalPrice >
++                              promotion.currentPrice && (
++                              <span className="text-lg text-gray-500 line-through">
++                                R$ {promotion.originalPrice.toFixed(2)}
++                              </span>
++                            )}
++                          </div>
+                         </div>
+-                      </div>
++                      )}
+ 
+                       {/* Category & Validity */}
+                       <div className="space-y-2 mb-4 text-sm text-gray-600">
+diff --git a/client/src/stores/authStore.ts b/client/src/stores/authStore.ts
+index e577b0f..fc10a77 100644
+--- a/client/src/stores/authStore.ts
++++ b/client/src/stores/authStore.ts
+@@ -23,7 +23,7 @@ interface AuthState {
+   logout: () => Promise<void>;
+   setUser: (user: User | null) => void;
+   checkAuth: () => Promise<void>;
+-  initializeAuth: () => void;
++  initializeAuth: () => () => void;
+ }
+ 
+ export const useAuthStore = create<AuthState>()(
+diff --git a/client/src/components/ParliamentaryAmendmentForm.tsx b/client/src/components/ParliamentaryAmendmentForm.tsx
+new file mode 100644
+index 0000000..42c79bd
+--- /dev/null
++++ b/client/src/components/ParliamentaryAmendmentForm.tsx
+@@ -0,0 +1,269 @@
++import { useState } from "react";
++import { X, Upload, Plus } from "lucide-react";
++import { sanityClient, ParliamentaryAmendment } from "@/lib/sanity";
++
++interface Props {
++  amendment?: ParliamentaryAmendment | null;
++  onClose: () => void;
++  onSuccess: () => void;
++}
++
++const slugify = (text: string) =>
++  text
++    .toLowerCase()
++    .normalize("NFD")
++    .replace(/[\u0300-\u036f]/g, "")
++    .replace(/[^\w\s-]/g, "")
++    .replace(/\s+/g, "-")
++    .replace(/-+/g, "-");
++
++export default function ParliamentaryAmendmentForm({
++  amendment,
++  onClose,
++  onSuccess,
++}: Props) {
++  const [formData, setFormData] = useState({
++    title: amendment?.title || "",
++    excerpt: amendment?.excerpt || "",
++    content: amendment?.content
++      ? amendment.content
++          .map(
++            (block: any) =>
++              block.children?.map((c: any) => c.text).join("") ?? ""
++          )
++          .join("\n")
++      : "",
++    publishedAt: amendment?.publishedAt
++      ? new Date(amendment.publishedAt).toISOString().split("T")[0]
++      : new Date().toISOString().split("T")[0],
++    author: amendment?.author || "",
++    category: amendment?.category || "",
++  });
++  const [imageUrls, setImageUrls] = useState<string[]>([]);
++  const [loading, setLoading] = useState(false);
++  const [error, setError] = useState("");
++  const inputClass =
++    "w-full px-4 py-3 border border-[#e8e4d8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8bc34a]";
++
++  const handleChange = (
++    e: React.ChangeEvent<
++      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
++    >
++  ) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
++  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
++    if (!e.target.files) return;
++    setLoading(true);
++    try {
++      for (const file of Array.from(e.target.files)) {
++        const asset = await sanityClient.assets.upload("image", file);
++        setImageUrls(prev => [...prev, asset._id]);
++      }
++    } catch {
++      setError("Erro ao fazer upload de imagem");
++    } finally {
++      setLoading(false);
++    }
++  };
++  const handleSubmit = async (e: React.FormEvent) => {
++    e.preventDefault();
++    setError("");
++    setLoading(true);
++    try {
++      const content = formData.content
++        .split("\n")
++        .filter(Boolean)
++        .map((text: string) => ({
++          _type: "block",
++          _key: Math.random().toString(36).slice(2),
++          style: "normal",
++          children: [
++            {
++              _type: "span",
++              _key: Math.random().toString(36).slice(2),
++              text,
++              marks: [],
++            },
++          ],
++          markDefs: [],
++        }));
++      const amendmentData: any = {
++        _type: "parliamentaryAmendment",
++        title: formData.title,
++        slug: { _type: "slug", current: slugify(formData.title) },
++        excerpt: formData.excerpt,
++        content,
++        publishedAt: new Date(`${formData.publishedAt}T12:00:00`).toISOString(),
++        author: formData.author,
++        category: formData.category || undefined,
++        ...(imageUrls.length > 0 && {
++          images: imageUrls.map(id => ({
++            _type: "image",
++            asset: { _type: "reference", _ref: id },
++          })),
++        }),
++      };
++      if (amendment?._id)
++        await sanityClient.patch(amendment._id).set(amendmentData).commit();
++      else await sanityClient.create(amendmentData);
++      onSuccess();
++    } catch (err) {
++      setError(
++        err instanceof Error ? err.message : "Erro ao salvar emenda parlamentar"
++      );
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  return (
++    <div className="p-8">
++      <div className="flex items-center justify-between mb-6">
++        <h2 className="font-serif text-2xl font-bold text-[#3a4a2a]">
++          {amendment ? "Editar Emenda Parlamentar" : "Nova Emenda Parlamentar"}
++        </h2>
++        <button onClick={onClose} className="p-2 hover:bg-[#f0ede4] rounded-lg">
++          <X size={24} />
++        </button>
++      </div>
++      {error && (
++        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
++          {error}
++        </div>
++      )}
++      <form onSubmit={handleSubmit} className="space-y-6">
++        <div>
++          <label className="block text-sm font-semibold text-[#3a4a2a] mb-2">
++            Título *
++          </label>
++          <input
++            name="title"
++            value={formData.title}
++            onChange={handleChange}
++            required
++            className={inputClass}
++          />
++        </div>
++        <div>
++          <label className="block text-sm font-semibold text-[#3a4a2a] mb-2">
++            Resumo *
++          </label>
++          <textarea
++            name="excerpt"
++            value={formData.excerpt}
++            onChange={handleChange}
++            required
++            rows={3}
++            className={inputClass}
++          />
++        </div>
++        <div>
++          <label className="block text-sm font-semibold text-[#3a4a2a] mb-2">
++            Conteúdo *
++          </label>
++          <textarea
++            name="content"
++            value={formData.content}
++            onChange={handleChange}
++            required
++            rows={8}
++            className={`${inputClass} font-mono text-sm`}
++          />
++          <p className="text-xs text-[#5a5a4a] mt-2">
++            Use quebras de linha para separar parágrafos.
++          </p>
++        </div>
++        <div>
++          <label className="block text-sm font-semibold text-[#3a4a2a] mb-2">
++            Imagens
++          </label>
++          <div className="border-2 border-dashed border-[#8bc34a]/30 rounded-lg p-6 text-center">
++            <input
++              type="file"
++              multiple
++              accept="image/*"
++              onChange={handleUpload}
++              className="hidden"
++              id="amendment-image-upload"
++            />
++            <label
++              htmlFor="amendment-image-upload"
++              className="cursor-pointer flex flex-col items-center gap-2"
++            >
++              <Upload size={24} className="text-[#8bc34a]" />
++              <span className="text-sm font-medium text-[#3a4a2a]">
++                Clique para fazer upload de imagens
++              </span>
++              <span className="text-xs text-[#5a5a4a]">PNG, JPG até 10MB</span>
++            </label>
++          </div>
++          {imageUrls.length > 0 && (
++            <p className="text-sm text-[#3a4a2a] mt-2">
++              {imageUrls.length} imagem(ns) adicionada(s)
++            </p>
++          )}
++        </div>
++        <div className="grid grid-cols-2 gap-4">
++          <div>
++            <label className="block text-sm font-semibold text-[#3a4a2a] mb-2">
++              Data de Publicação *
++            </label>
++            <input
++              type="date"
++              name="publishedAt"
++              value={formData.publishedAt}
++              onChange={handleChange}
++              required
++              className={inputClass}
++            />
++          </div>
++          <div>
++            <label className="block text-sm font-semibold text-[#3a4a2a] mb-2">
++              Categoria
++            </label>
++            <input
++              name="category"
++              value={formData.category}
++              onChange={handleChange}
++              placeholder="Ex.: Infraestrutura"
++              className={inputClass}
++            />
++          </div>
++        </div>
++        <div>
++          <label className="block text-sm font-semibold text-[#3a4a2a] mb-2">
++            Autor
++          </label>
++          <input
++            name="author"
++            value={formData.author}
++            onChange={handleChange}
++            className={inputClass}
++          />
++        </div>
++        <div className="flex gap-4 pt-4 border-t border-[#e8e4d8]">
++          <button
++            type="button"
++            onClick={onClose}
++            className="flex-1 px-6 py-3 border border-[#e8e4d8] text-[#3a4a2a] font-semibold rounded-lg"
++          >
++            Cancelar
++          </button>
++          <button
++            type="submit"
++            disabled={loading}
++            className="flex-1 px-6 py-3 bg-[#8bc34a] hover:bg-[#7ab030] disabled:opacity-50 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
++          >
++            {loading ? (
++              "Salvando..."
++            ) : (
++              <>
++                <Plus size={18} />
++                {amendment ? "Atualizar" : "Publicar"}
++              </>
++            )}
++          </button>
++        </div>
++      </form>
++    </div>
++  );
++}
+diff --git a/client/src/pages/ParliamentaryAmendmentDetail.tsx b/client/src/pages/ParliamentaryAmendmentDetail.tsx
+new file mode 100644
+index 0000000..e4c8f7e
+--- /dev/null
++++ b/client/src/pages/ParliamentaryAmendmentDetail.tsx
+@@ -0,0 +1,241 @@
++import { useEffect, useState } from "react";
++import { useParams, Link } from "wouter";
++import { motion } from "framer-motion";
++import { Calendar, User, ChevronLeft, Share2 } from "lucide-react";
++import { PortableText } from "@portabletext/react";
++import {
++  fetchParliamentaryAmendmentBySlug,
++  urlFor,
++  ParliamentaryAmendment,
++} from "@/lib/sanity";
++
++export default function ParliamentaryAmendmentDetailPage() {
++  const { slug } = useParams<{ slug: string }>();
++  const [amendment, setAmendment] = useState<ParliamentaryAmendment | null>(
++    null
++  );
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++
++  useEffect(() => {
++    const load = async () => {
++      if (!slug) return;
++      try {
++        setLoading(true);
++        const data = await fetchParliamentaryAmendmentBySlug(slug);
++        if (!data) setError("Emenda parlamentar não encontrada.");
++        else setAmendment(data);
++      } catch (err) {
++        setError(
++          "Erro ao carregar a emenda parlamentar. Tente novamente mais tarde."
++        );
++        console.error(err);
++      } finally {
++        setLoading(false);
++      }
++    };
++    load();
++  }, [slug]);
++
++  if (loading)
++    return (
++      <div className="min-h-screen flex items-center justify-center bg-[#faf8f2]">
++        <div className="text-center">
++          <div className="w-12 h-12 border-4 border-[#8bc34a] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
++          <p className="text-[#5a5a4a] font-medium">
++            Carregando emenda parlamentar...
++          </p>
++        </div>
++      </div>
++    );
++  if (error || !amendment)
++    return (
++      <div className="min-h-screen flex items-center justify-center bg-[#faf8f2]">
++        <div className="text-center">
++          <p className="text-red-600 font-medium mb-4">
++            {error || "Emenda parlamentar não encontrada."}
++          </p>
++          <Link
++            href="/emendas-parlamentares"
++            className="text-[#8bc34a] hover:underline font-semibold"
++          >
++            Voltar para Emendas Parlamentares
++          </Link>
++        </div>
++      </div>
++    );
++
++  const shareUrl = `${window.location.origin}/emendas-parlamentares/${slug}`;
++  const shareText = `Confira esta emenda parlamentar da Cooperval: ${amendment.title}`;
++
++  return (
++    <div className="min-h-screen bg-[#faf8f2]">
++      {amendment.images?.length > 0 && (
++        <div className="bg-[#2d3a1e] pt-20 lg:pt-24">
++          <div className="relative overflow-hidden">
++            <img
++              src={urlFor(amendment.images[0]).width(1200).url()}
++              alt={amendment.title}
++              className="w-full h-auto block"
++            />
++          </div>
++          <div className="container py-8 md:py-10">
++            <motion.div
++              initial={{ opacity: 0, y: 20 }}
++              animate={{ opacity: 1, y: 0 }}
++              transition={{ duration: 0.6 }}
++            >
++              <Link
++                href="/emendas-parlamentares"
++                className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-4 transition-colors"
++              >
++                <ChevronLeft size={18} />
++                Voltar para Emendas Parlamentares
++              </Link>
++              <h1 className="font-serif text-3xl md:text-5xl font-bold text-white">
++                {amendment.title}
++              </h1>
++            </motion.div>
++          </div>
++        </div>
++      )}
++      <section className="py-12 md:py-20">
++        <div className="container max-w-4xl">
++          <motion.div
++            initial={{ opacity: 0, y: 20 }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ duration: 0.6, delay: 0.2 }}
++          >
++            {!amendment.images?.length && (
++              <>
++                <Link
++                  href="/emendas-parlamentares"
++                  className="inline-flex items-center gap-2 text-[#6f8f2e] hover:text-[#8bc34a] mb-6"
++                >
++                  <ChevronLeft size={18} />
++                  Voltar para Emendas Parlamentares
++                </Link>
++                <h1 className="font-serif text-3xl md:text-5xl font-bold text-[#3a4a2a] mb-8">
++                  {amendment.title}
++                </h1>
++              </>
++            )}
++            <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b border-[#e8e4d8]">
++              {amendment.publishedAt && (
++                <div className="flex items-center gap-2 text-[#6a6a5a]">
++                  <Calendar size={18} />
++                  {new Date(amendment.publishedAt).toLocaleDateString("pt-BR", {
++                    year: "numeric",
++                    month: "long",
++                    day: "numeric",
++                  })}
++                </div>
++              )}
++              {amendment.author && (
++                <div className="flex items-center gap-2 text-[#6a6a5a]">
++                  <User size={18} />
++                  {amendment.author}
++                </div>
++              )}
++              {amendment.category && (
++                <div className="px-4 py-1 bg-[#8bc34a]/10 text-[#6f8f2e] rounded-full text-sm font-medium">
++                  {amendment.category}
++                </div>
++              )}
++            </div>
++            {amendment.excerpt && (
++              <p className="text-xl text-[#5a5a4a] mb-8 italic font-medium">
++                {amendment.excerpt}
++              </p>
++            )}
++            {amendment.content && (
++              <div className="prose prose-lg max-w-none mb-12 text-[#3a4a2a]">
++                <PortableText
++                  value={amendment.content}
++                  components={{
++                    block: {
++                      normal: ({ children }) => (
++                        <p className="mb-4 text-[#5a5a4a] leading-relaxed">
++                          {children}
++                        </p>
++                      ),
++                      h2: ({ children }) => (
++                        <h2 className="font-serif text-2xl font-bold text-[#3a4a2a] mt-8 mb-4">
++                          {children}
++                        </h2>
++                      ),
++                      h3: ({ children }) => (
++                        <h3 className="font-serif text-xl font-bold text-[#3a4a2a] mt-6 mb-3">
++                          {children}
++                        </h3>
++                      ),
++                    },
++                    list: {
++                      bullet: ({ children }) => (
++                        <ul className="list-disc list-inside mb-4 space-y-2">
++                          {children}
++                        </ul>
++                      ),
++                      number: ({ children }) => (
++                        <ol className="list-decimal list-inside mb-4 space-y-2">
++                          {children}
++                        </ol>
++                      ),
++                    },
++                  }}
++                />
++              </div>
++            )}
++            {amendment.images?.length > 1 && (
++              <div className="mb-12">
++                <h3 className="font-serif text-2xl font-bold text-[#3a4a2a] mb-6">
++                  Galeria
++                </h3>
++                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
++                  {amendment.images.slice(1).map((img, idx) => (
++                    <motion.div
++                      key={img._key || idx}
++                      initial={{ opacity: 0, scale: 0.95 }}
++                      whileInView={{ opacity: 1, scale: 1 }}
++                      viewport={{ once: true }}
++                      className="rounded-xl overflow-hidden shadow-sm border border-[#e8e4d8]"
++                    >
++                      <img
++                        src={urlFor(img).width(600).url()}
++                        alt={img.alt || `Imagem ${idx + 1}`}
++                        className="w-full h-auto block hover:scale-105 transition-transform duration-300"
++                      />
++                    </motion.div>
++                  ))}
++                </div>
++              </div>
++            )}
++            <div className="py-8 border-t border-[#e8e4d8]">
++              <p className="text-[#5a5a4a] font-semibold mb-4">Compartilhar:</p>
++              <div className="flex gap-4">
++                <a
++                  href={`https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`}
++                  target="_blank"
++                  rel="noopener noreferrer"
++                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#25d366] hover:bg-[#20bd5a] text-white rounded-full transition-colors"
++                >
++                  <Share2 size={16} />
++                  WhatsApp
++                </a>
++                <a
++                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
++                  target="_blank"
++                  rel="noopener noreferrer"
++                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1877f2] hover:bg-[#0a66c2] text-white rounded-full transition-colors"
++                >
++                  <Share2 size={16} />
++                  Facebook
++                </a>
++              </div>
++            </div>
++          </motion.div>
++        </div>
++      </section>
++    </div>
++  );
++}
+diff --git a/client/src/pages/ParliamentaryAmendments.tsx b/client/src/pages/ParliamentaryAmendments.tsx
+new file mode 100644
+index 0000000..a459310
+--- /dev/null
++++ b/client/src/pages/ParliamentaryAmendments.tsx
+@@ -0,0 +1,155 @@
++import { useEffect, useState } from "react";
++import { motion } from "framer-motion";
++import { Link } from "wouter";
++import { Calendar, User, ChevronRight } from "lucide-react";
++import {
++  fetchParliamentaryAmendments,
++  urlFor,
++  ParliamentaryAmendment,
++} from "@/lib/sanity";
++
++export default function ParliamentaryAmendmentsPage() {
++  const [amendments, setAmendments] = useState<ParliamentaryAmendment[]>([]);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++
++  useEffect(() => {
++    const loadAmendments = async () => {
++      try {
++        setLoading(true);
++        setAmendments(await fetchParliamentaryAmendments());
++      } catch (err) {
++        setError(
++          "Erro ao carregar emendas parlamentares. Tente novamente mais tarde."
++        );
++        console.error(err);
++      } finally {
++        setLoading(false);
++      }
++    };
++    loadAmendments();
++  }, []);
++
++  if (loading) {
++    return (
++      <div className="min-h-screen flex items-center justify-center bg-[#faf8f2]">
++        <div className="text-center">
++          <div className="w-12 h-12 border-4 border-[#8bc34a] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
++          <p className="text-[#5a5a4a] font-medium">
++            Carregando emendas parlamentares...
++          </p>
++        </div>
++      </div>
++    );
++  }
++
++  if (error) {
++    return (
++      <div className="min-h-screen flex items-center justify-center bg-[#faf8f2]">
++        <div className="text-center">
++          <p className="text-red-600 font-medium mb-4">{error}</p>
++          <button
++            onClick={() => window.location.reload()}
++            className="px-6 py-2 bg-[#8bc34a] text-white rounded-full hover:bg-[#7ab030] transition-colors"
++          >
++            Tentar Novamente
++          </button>
++        </div>
++      </div>
++    );
++  }
++
++  return (
++    <div className="min-h-screen bg-[#faf8f2]">
++      <section className="relative bg-gradient-to-br from-[#6f8f2e] to-[#5a7a25] py-20 md:py-28 pt-32 lg:pt-40 text-white">
++        <div className="container">
++          <motion.div
++            initial={{ opacity: 0, y: 20 }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ duration: 0.6 }}
++            className="max-w-3xl"
++          >
++            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4">
++              Emendas Parlamentares
++            </h1>
++            <p className="text-white/90 text-lg">
++              Acompanhe as emendas parlamentares destinadas à Cooperval e os
++              resultados gerados para nossa cooperativa.
++            </p>
++          </motion.div>
++        </div>
++      </section>
++
++      <section className="py-20 md:py-28">
++        <div className="container">
++          {amendments.length === 0 ? (
++            <div className="text-center py-20">
++              <p className="text-[#5a5a4a] text-lg font-medium">
++                Nenhuma emenda parlamentar publicada ainda.
++              </p>
++            </div>
++          ) : (
++            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
++              {amendments.map((item, index) => (
++                <motion.div
++                  key={item._id}
++                  initial={{ opacity: 0, y: 30 }}
++                  whileInView={{ opacity: 1, y: 0 }}
++                  viewport={{ once: true }}
++                  transition={{ duration: 0.5, delay: index * 0.1 }}
++                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#e8e4d8] hover:shadow-lg hover:border-[#8bc34a]/30 transition-all duration-300 group flex flex-col"
++                >
++                  {item.images?.length > 0 && (
++                    <div className="relative h-48 overflow-hidden bg-[#f0ede4]">
++                      <img
++                        src={urlFor(item.images[0])
++                          .width(400)
++                          .height(300)
++                          .url()}
++                        alt={item.title}
++                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
++                      />
++                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
++                    </div>
++                  )}
++                  <div className="p-6 flex flex-col flex-grow">
++                    <div className="flex items-center gap-3 mb-3 text-sm text-[#6a6a5a]">
++                      {item.publishedAt && (
++                        <div className="flex items-center gap-1">
++                          <Calendar size={14} />
++                          <span>
++                            {new Date(item.publishedAt).toLocaleDateString(
++                              "pt-BR"
++                            )}
++                          </span>
++                        </div>
++                      )}
++                      {item.author && (
++                        <div className="flex items-center gap-1">
++                          <User size={14} />
++                          <span>{item.author}</span>
++                        </div>
++                      )}
++                    </div>
++                    <h3 className="font-serif text-xl font-bold text-[#3a4a2a] mb-2 line-clamp-2 group-hover:text-[#8bc34a] transition-colors">
++                      {item.title}
++                    </h3>
++                    <p className="text-[#5a5a4a] text-sm mb-4 line-clamp-3 flex-grow">
++                      {item.excerpt}
++                    </p>
++                    <Link
++                      href={`/emendas-parlamentares/${item.slug.current}`}
++                      className="inline-flex items-center gap-2 text-[#8bc34a] font-semibold hover:gap-3 transition-all"
++                    >
++                      Ler Mais <ChevronRight size={16} />
++                    </Link>
++                  </div>
++                </motion.div>
++              ))}
++            </div>
++          )}
++        </div>
++      </section>
++    </div>
++  );
++}
+diff --git a/sanity/README.md b/sanity/README.md
+new file mode 100644
+index 0000000..5323090
+--- /dev/null
++++ b/sanity/README.md
+@@ -0,0 +1,21 @@
++# Configuração do Sanity — Emendas Parlamentares
++
++O site usa o tipo de documento `parliamentaryAmendment` para alimentar a página `/emendas-parlamentares` e o painel `/admin`.
++
++## Integração no Studio existente
++
++1. Copie `schemaTypes/parliamentaryAmendment.ts` para o projeto do Sanity Studio.
++2. Importe o schema no arquivo que monta o array de tipos, por exemplo:
++
++```ts
++import parliamentaryAmendment from "./parliamentaryAmendment";
++
++export const schemaTypes = [
++  // tipos existentes...
++  parliamentaryAmendment,
++];
++```
++
++3. Publique o Studio. O painel do site grava e edita documentos nesse tipo por meio das variáveis `VITE_SANITY_PROJECT_ID`, `VITE_SANITY_DATASET` e `VITE_SANITY_TOKEN`.
++
++Os campos são os mesmos usados pela página de notícias: título, slug, resumo, conteúdo Portable Text, galeria de imagens, data de publicação, autor e categoria.
+diff --git a/sanity/schemaTypes/index.ts b/sanity/schemaTypes/index.ts
+new file mode 100644
+index 0000000..709e04c
+--- /dev/null
++++ b/sanity/schemaTypes/index.ts
+@@ -0,0 +1,9 @@
++import parliamentaryAmendment from "./parliamentaryAmendment";
++
++/**
++ * Adicione estes tipos aos schemas já existentes do Studio.
++ * Este arquivo permite importar o novo tipo sem alterar os schemas legados.
++ */
++export const parliamentaryAmendmentSchemaTypes = [parliamentaryAmendment];
++
++export default parliamentaryAmendment;
+diff --git a/sanity/schemaTypes/parliamentaryAmendment.ts b/sanity/schemaTypes/parliamentaryAmendment.ts
+new file mode 100644
+index 0000000..81c63b1
+--- /dev/null
++++ b/sanity/schemaTypes/parliamentaryAmendment.ts
+@@ -0,0 +1,64 @@
++import { defineField, defineType } from "sanity";
++
++/**
++ * Schema do conteúdo publicado em /emendas-parlamentares.
++ * Inclua este tipo no array `schema.types` do Sanity Studio existente.
++ */
++export default defineType({
++  name: "parliamentaryAmendment",
++  title: "Emenda Parlamentar",
++  type: "document",
++  fields: [
++    defineField({
++      name: "title",
++      title: "Título",
++      type: "string",
++      validation: Rule => Rule.required(),
++    }),
++    defineField({
++      name: "slug",
++      title: "Slug",
++      type: "slug",
++      options: { source: "title", maxLength: 96 },
++      validation: Rule => Rule.required(),
++    }),
++    defineField({
++      name: "excerpt",
++      title: "Resumo",
++      type: "text",
++      rows: 3,
++      validation: Rule => Rule.required(),
++    }),
++    defineField({
++      name: "content",
++      title: "Conteúdo",
++      type: "array",
++      of: [{ type: "block" }],
++      validation: Rule => Rule.required(),
++    }),
++    defineField({
++      name: "images",
++      title: "Imagens",
++      type: "array",
++      of: [
++        {
++          type: "image",
++          options: { hotspot: true },
++          fields: [{ name: "alt", title: "Texto alternativo", type: "string" }],
++        },
++      ],
++    }),
++    defineField({
++      name: "publishedAt",
++      title: "Data de publicação",
++      type: "datetime",
++      initialValue: () => new Date().toISOString(),
++      validation: Rule => Rule.required(),
++    }),
++    defineField({ name: "author", title: "Autor", type: "string" }),
++    defineField({ name: "category", title: "Categoria", type: "string" }),
++  ],
++  preview: {
++    select: { title: "title", subtitle: "publishedAt", media: "images.0" },
++  },
++});

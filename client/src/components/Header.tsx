@@ -9,7 +9,8 @@ import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const LOGO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029066893/vPpEKCFaDDJJpPSl.png";
+const LOGO_URL =
+  "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029066893/vPpEKCFaDDJJpPSl.png";
 
 const navLinks = [
   { href: "/", label: "Início" },
@@ -17,6 +18,7 @@ const navLinks = [
   { href: "/#servicos", label: "Serviços" },
   { href: "/#lojas", label: "Nossas Lojas" },
   { href: "/noticias", label: "Notícias" },
+  { href: "/emendas-parlamentares", label: "Emendas Parlamentares" },
   { href: "/promocoes", label: "Promoções" },
   { href: "/contato", label: "Contato" },
 ];
@@ -57,7 +59,7 @@ export default function Header() {
         {/* Logo (Removida conforme solicitado, mantendo apenas o link de texto para acessibilidade/navegação se desejar, ou removendo tudo) */}
         <Link href="/" className="flex items-center gap-3 shrink-0">
           <span
-              className={`font-serif text-xl lg:text-2xl font-bold text-white`}
+            className={`font-serif text-xl lg:text-2xl font-bold text-white`}
           >
             Cooperval
           </span>
@@ -65,13 +67,16 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-1">
-          {navLinks.map((link) => {
-            const isActive = location === link.href || (link.href !== "/" && location.startsWith(link.href.replace("/#", "/")));
+          {navLinks.map(link => {
+            const isActive =
+              location === link.href ||
+              (link.href !== "/" &&
+                location.startsWith(link.href.replace("/#", "/")));
             return (
               <a
                 key={link.href}
                 href={link.href}
-                onClick={(e) => {
+                onClick={e => {
                   if (link.href.startsWith("/#")) {
                     e.preventDefault();
                     handleNavClick(link.href);
@@ -109,11 +114,11 @@ export default function Header() {
             className="lg:hidden bg-[#faf8f2]/98 backdrop-blur-lg border-t border-[#6f8f2e]/10 overflow-hidden"
           >
             <nav className="container py-4 flex flex-col gap-1">
-              {navLinks.map((link) => (
+              {navLinks.map(link => (
                 <a
                   key={link.href}
                   href={link.href}
-                  onClick={(e) => {
+                  onClick={e => {
                     if (link.href.startsWith("/#")) {
                       e.preventDefault();
                       handleNavClick(link.href);

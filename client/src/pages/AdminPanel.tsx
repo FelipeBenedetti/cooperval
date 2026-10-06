@@ -14,23 +14,41 @@ import {
   DollarSign,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
-import { sanityClient, News, Promotion } from "@/lib/sanity";
+import {
+  sanityClient,
+  News,
+  Promotion,
+  ParliamentaryAmendment,
+} from "@/lib/sanity";
 import NewsForm from "@/components/NewsForm";
 import PromotionForm from "@/components/PromotionForm";
+import ParliamentaryAmendmentForm from "@/components/ParliamentaryAmendmentForm";
 
 export default function AdminPanelPage() {
   const { user, logout, isAuthenticated } = useAuthStore();
   const [, navigate] = useLocation();
   const [news, setNews] = useState<News[]>([]);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [amendments, setAmendments] = useState<ParliamentaryAmendment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingNews, setEditingNews] = useState<News | null>(null);
-  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
+  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(
+    null
+  );
+  const [editingAmendment, setEditingAmendment] =
+    useState<ParliamentaryAmendment | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [deleteConfirmPromotion, setDeleteConfirmPromotion] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"news" | "promotions">("news");
+  const [deleteConfirmPromotion, setDeleteConfirmPromotion] = useState<
+    string | null
+  >(null);
+  const [deleteConfirmAmendment, setDeleteConfirmAmendment] = useState<
+    string | null
+  >(null);
+  const [activeTab, setActiveTab] = useState<
+    "news" | "promotions" | "amendments"
+  >("news");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -41,15 +59,19 @@ export default function AdminPanelPage() {
   useEffect(() => {
     if (activeTab === "news") {
       loadNews();
-    } else {
+    } else if (activeTab === "promotions") {
       loadPromotions();
+    } else {
+      loadAmendments();
     }
   }, [activeTab]);
 
   const loadNews = async () => {
     try {
       setLoading(true);
-      const data = await sanityClient.fetch(`*[_type == "news"] | order(publishedAt desc)`);
+      const data = await sanityClient.fetch(
+        `*[_type == "news"] | order(publishedAt desc)`
+      );
       setNews(data || []);
     } catch (error) {
       console.error("Erro ao carregar notícias:", error);
@@ -61,7 +83,9 @@ export default function AdminPanelPage() {
   const loadPromotions = async () => {
     try {
       setLoading(true);
-      const data = await sanityClient.fetch(`*[_type == "promotion"] | order(validUntil desc)`);
+      const data = await sanityClient.fetch(
+        `*[_type == "promotion"] | order(validUntil desc)`
+      );
       setPromotions(data || []);
     } catch (error) {
       console.error("Erro ao carregar promoções:", error);
@@ -70,10 +94,24 @@ export default function AdminPanelPage() {
     }
   };
 
+  const loadAmendments = async () => {
+    try {
+      setLoading(true);
+      const data = await sanityClient.fetch(
+        `*[_type == "parliamentaryAmendment"] | order(publishedAt desc)`
+      );
+      setAmendments(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar emendas parlamentares:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteNews = async (id: string) => {
     try {
       await sanityClient.delete(id);
-      setNews(news.filter((n) => n._id !== id));
+      setNews(news.filter(n => n._id !== id));
       setDeleteConfirm(null);
       setTimeout(() => {
         loadNews();
@@ -87,7 +125,7 @@ export default function AdminPanelPage() {
   const handleDeletePromotion = async (id: string) => {
     try {
       await sanityClient.delete(id);
-      setPromotions(promotions.filter((p) => p._id !== id));
+      setPromotions(promotions.filter(p => p._id !== id));
       setDeleteConfirmPromotion(null);
       setTimeout(() => {
         loadPromotions();
@@ -98,21 +136,39 @@ export default function AdminPanelPage() {
     }
   };
 
+  const handleDeleteAmendment = async (id: string) => {
+    try {
+      await sanityClient.delete(id);
+      setAmendments(amendments.filter(item => item._id !== id));
+      setDeleteConfirmAmendment(null);
+      loadAmendments();
+    } catch (error) {
+      console.error("Erro ao deletar emenda parlamentar:", error);
+      alert("Erro ao deletar emenda parlamentar. Tente novamente.");
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
   const filteredNews = news.filter(
-    (item) =>
+    item =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredPromotions = promotions.filter(
-    (item) =>
+    item =>
       item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredAmendments = amendments.filter(
+    item =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!isAuthenticated) {
@@ -128,9 +184,7 @@ export default function AdminPanelPage() {
             <h1 className="font-serif text-2xl font-bold text-[#3a4a2a]">
               Painel de Administração
             </h1>
-            <p className="text-sm text-[#5a5a4a]">
-              Bem-vindo, {user?.name}
-            </p>
+            <p className="text-sm text-[#5a5a4a]">Bem-vindo, {user?.name}</p>
           </div>
           <button
             onClick={handleLogout}
@@ -154,9 +208,13 @@ export default function AdminPanelPage() {
             />
             <input
               type="text"
-              placeholder={activeTab === "news" ? "Pesquisar notícias..." : "Pesquisar promoções..."}
+              placeholder={
+                activeTab === "news"
+                  ? "Pesquisar notícias..."
+                  : "Pesquisar promoções..."
+              }
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-[#e8e4d8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8bc34a]"
             />
           </div>
@@ -166,15 +224,21 @@ export default function AdminPanelPage() {
             onClick={() => {
               if (activeTab === "news") {
                 setEditingNews(null);
-              } else {
+              } else if (activeTab === "promotions") {
                 setEditingPromotion(null);
+              } else {
+                setEditingAmendment(null);
               }
               setShowForm(true);
             }}
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#8bc34a] hover:bg-[#7ab030] text-white font-semibold rounded-lg transition-all"
           >
             <Plus size={18} />
-            {activeTab === "news" ? "Nova Notícia" : "Nova Promoção"}
+            {activeTab === "news"
+              ? "Nova Notícia"
+              : activeTab === "promotions"
+                ? "Nova Promoção"
+                : "Nova Emenda Parlamentar"}
           </button>
         </div>
 
@@ -199,6 +263,16 @@ export default function AdminPanelPage() {
             }`}
           >
             Promoções
+          </button>
+          <button
+            onClick={() => setActiveTab("amendments")}
+            className={`px-6 py-3 font-semibold transition-colors ${
+              activeTab === "amendments"
+                ? "text-[#8bc34a] border-b-2 border-[#8bc34a]"
+                : "text-[#5a5a4a] hover:text-[#3a4a2a]"
+            }`}
+          >
+            Emendas Parlamentares
           </button>
         </div>
 
@@ -228,7 +302,7 @@ export default function AdminPanelPage() {
                     loadNews();
                   }}
                 />
-              ) : (
+              ) : activeTab === "promotions" ? (
                 <PromotionForm
                   promotion={editingPromotion}
                   onClose={() => {
@@ -239,6 +313,19 @@ export default function AdminPanelPage() {
                     setShowForm(false);
                     setEditingPromotion(null);
                     loadPromotions();
+                  }}
+                />
+              ) : (
+                <ParliamentaryAmendmentForm
+                  amendment={editingAmendment}
+                  onClose={() => {
+                    setShowForm(false);
+                    setEditingAmendment(null);
+                  }}
+                  onSuccess={() => {
+                    setShowForm(false);
+                    setEditingAmendment(null);
+                    loadAmendments();
                   }}
                 />
               )}
@@ -258,9 +345,14 @@ export default function AdminPanelPage() {
                 </div>
               ) : filteredNews.length === 0 ? (
                 <div className="text-center py-12 bg-white rounded-lg border border-[#e8e4d8]">
-                  <FileText size={48} className="mx-auto mb-4 text-[#8bc34a]/30" />
+                  <FileText
+                    size={48}
+                    className="mx-auto mb-4 text-[#8bc34a]/30"
+                  />
                   <p className="text-[#5a5a4a] text-lg font-medium">
-                    {searchTerm ? "Nenhuma notícia encontrada" : "Nenhuma notícia publicada"}
+                    {searchTerm
+                      ? "Nenhuma notícia encontrada"
+                      : "Nenhuma notícia publicada"}
                   </p>
                 </div>
               ) : (
@@ -284,7 +376,9 @@ export default function AdminPanelPage() {
                         <div className="flex items-center gap-4 text-xs text-[#6a6a5a]">
                           <div className="flex items-center gap-1">
                             <Calendar size={14} />
-                            {new Date(item.publishedAt).toLocaleDateString("pt-BR")}
+                            {new Date(item.publishedAt).toLocaleDateString(
+                              "pt-BR"
+                            )}
                           </div>
                           {item.category && (
                             <div className="px-2 py-1 bg-[#8bc34a]/10 text-[#6f8f2e] rounded">
@@ -297,7 +391,12 @@ export default function AdminPanelPage() {
                       {/* Actions */}
                       <div className="flex gap-2 w-full md:w-auto">
                         <button
-                          onClick={() => window.open(`/noticias/${item.slug.current}`, "_blank")}
+                          onClick={() =>
+                            window.open(
+                              `/noticias/${item.slug.current}`,
+                              "_blank"
+                            )
+                          }
                           className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors"
                           title="Visualizar"
                         >
@@ -356,7 +455,7 @@ export default function AdminPanelPage() {
                 ))
               )}
             </>
-          ) : (
+          ) : activeTab === "promotions" ? (
             // Promotions List
             <>
               {loading ? (
@@ -366,9 +465,14 @@ export default function AdminPanelPage() {
                 </div>
               ) : filteredPromotions.length === 0 ? (
                 <div className="text-center py-12 bg-white rounded-lg border border-[#e8e4d8]">
-                  <ShoppingCart size={48} className="mx-auto mb-4 text-[#8bc34a]/30" />
+                  <ShoppingCart
+                    size={48}
+                    className="mx-auto mb-4 text-[#8bc34a]/30"
+                  />
                   <p className="text-[#5a5a4a] text-lg font-medium">
-                    {searchTerm ? "Nenhuma promoção encontrada" : "Nenhuma promoção publicada"}
+                    {searchTerm
+                      ? "Nenhuma promoção encontrada"
+                      : "Nenhuma promoção publicada"}
                   </p>
                 </div>
               ) : (
@@ -401,7 +505,9 @@ export default function AdminPanelPage() {
                           )}
                           <div className="flex items-center gap-1">
                             <Calendar size={14} />
-                            {new Date(item.validUntil).toLocaleDateString("pt-BR")}
+                            {new Date(item.validUntil).toLocaleDateString(
+                              "pt-BR"
+                            )}
                           </div>
                         </div>
                       </div>
@@ -450,6 +556,109 @@ export default function AdminPanelPage() {
                           <button
                             onClick={() => handleDeletePromotion(item._id)}
                             className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                          >
+                            Deletar
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ))
+              )}
+            </>
+          ) : (
+            <>
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="w-12 h-12 border-4 border-[#8bc34a] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-[#5a5a4a]">
+                    Carregando emendas parlamentares...
+                  </p>
+                </div>
+              ) : filteredAmendments.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-lg border border-[#e8e4d8]">
+                  <FileText
+                    size={48}
+                    className="mx-auto mb-4 text-[#8bc34a]/30"
+                  />
+                  <p className="text-[#5a5a4a] text-lg font-medium">
+                    {searchTerm
+                      ? "Nenhuma emenda encontrada"
+                      : "Nenhuma emenda parlamentar publicada"}
+                  </p>
+                </div>
+              ) : (
+                filteredAmendments.map((item, index) => (
+                  <motion.div
+                    key={item._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-white rounded-lg border border-[#e8e4d8] p-6 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-serif text-lg font-bold text-[#3a4a2a] mb-2 line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-[#5a5a4a] mb-3 line-clamp-2">
+                          {item.excerpt}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-[#6a6a5a]">
+                          <div className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            {new Date(item.publishedAt).toLocaleDateString(
+                              "pt-BR"
+                            )}
+                          </div>
+                          {item.category && (
+                            <div className="px-2 py-1 bg-[#8bc34a]/10 text-[#6f8f2e] rounded">
+                              {item.category}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 w-full md:w-auto">
+                        <button
+                          onClick={() => {
+                            setEditingAmendment(item);
+                            setShowForm(true);
+                          }}
+                          className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#8bc34a]/10 hover:bg-[#8bc34a]/20 text-[#6f8f2e] rounded-lg"
+                          title="Editar"
+                        >
+                          <Edit2 size={16} />
+                          <span className="md:hidden">Editar</span>
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirmAmendment(item._id)}
+                          className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg"
+                          title="Deletar"
+                        >
+                          <Trash2 size={16} />
+                          <span className="md:hidden">Deletar</span>
+                        </button>
+                      </div>
+                    </div>
+                    {deleteConfirmAmendment === item._id && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between gap-4"
+                      >
+                        <p className="text-red-700 font-medium">
+                          Tem certeza que deseja deletar esta emenda?
+                        </p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setDeleteConfirmAmendment(null)}
+                            className="px-3 py-1 bg-white border border-red-200 text-red-600 rounded"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAmendment(item._id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded"
                           >
                             Deletar
                           </button>

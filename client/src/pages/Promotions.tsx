@@ -28,16 +28,17 @@ export default function PromotionsPage() {
   const categories = Array.from(
     new Set(
       promotions
-        .map((p) => p.category)
+        .map(p => p.category)
         .filter((category): category is string => Boolean(category))
     )
   );
 
   const filteredPromotions = selectedCategory
-    ? promotions.filter((p) => p.category === selectedCategory)
+    ? promotions.filter(p => p.category === selectedCategory)
     : promotions;
 
   const calculateDiscount = (original: number, current: number) => {
+    if (original <= 0) return 0;
     return Math.round(((original - current) / original) * 100);
   };
 
@@ -56,7 +57,9 @@ export default function PromotionsPage() {
               Promoções
             </h1>
             <p className="text-white/90 text-lg">
-              Confira as melhores ofertas e promoções especiais da Cooperval. Produtos de qualidade com preços imperdíveis!            </p>
+              Confira as melhores ofertas e promoções especiais da Cooperval.
+              Produtos de qualidade com preços imperdíveis!{" "}
+            </p>
           </motion.div>
         </div>
       </section>
@@ -72,21 +75,23 @@ export default function PromotionsPage() {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${selectedCategory === null
-                    ? "bg-[#8bc34a] text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
+                  className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${
+                    selectedCategory === null
+                      ? "bg-[#8bc34a] text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
                 >
                   Todas
                 </button>
-                {categories.map((category) => (
+                {categories.map(category => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${selectedCategory === category
-                      ? "bg-[#8bc34a] text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
+                    className={`px-6 py-2 rounded-full font-sans font-medium transition-all ${
+                      selectedCategory === category
+                        ? "bg-[#8bc34a] text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
                   >
                     {category}
                   </button>
@@ -119,7 +124,7 @@ export default function PromotionsPage() {
                 );
                 const daysLeft = Math.ceil(
                   (new Date(promotion.validUntil).getTime() - Date.now()) /
-                  (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24)
                 );
 
                 return (
@@ -155,19 +160,22 @@ export default function PromotionsPage() {
                         {promotion.description}
                       </p>
 
-                      {/* Prices */}
-                      <div className="mb-4">
-                        <div className="flex items-baseline gap-3 mb-2">
-                          <span className="text-3xl font-bold text-[#8bc34a]">
-                            R$ {promotion.currentPrice.toFixed(2)}
-                          </span>
-                          {promotion.originalPrice > promotion.currentPrice && (
-                            <span className="text-lg text-gray-500 line-through">
-                              R$ {promotion.originalPrice.toFixed(2)}
+                      {/* Prices: preço zero significa que a promoção não deve exibir preço */}
+                      {promotion.currentPrice > 0 && (
+                        <div className="mb-4">
+                          <div className="flex items-baseline gap-3 mb-2">
+                            <span className="text-3xl font-bold text-[#8bc34a]">
+                              R$ {promotion.currentPrice.toFixed(2)}
                             </span>
-                          )}
+                            {promotion.originalPrice >
+                              promotion.currentPrice && (
+                              <span className="text-lg text-gray-500 line-through">
+                                R$ {promotion.originalPrice.toFixed(2)}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Category & Validity */}
                       <div className="space-y-2 mb-4 text-sm text-gray-600">

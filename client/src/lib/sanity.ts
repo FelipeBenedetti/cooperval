@@ -44,6 +44,19 @@ export interface News {
   category?: string;
 }
 
+export interface ParliamentaryAmendment {
+  _id: string;
+  _type: "parliamentaryAmendment";
+  title: string;
+  slug: { current: string };
+  excerpt: string;
+  content: any;
+  images: NewsImage[];
+  publishedAt: string;
+  author?: string;
+  category?: string;
+}
+
 // Tipos para Promoções
 export interface Promotion {
   _id: string;
@@ -76,7 +89,9 @@ export const newsQueries = {
   }`,
 
   // Obter notícia por slug
-  newsBySlug: (slug: string) => `*[_type == "news" && slug.current == "${slug}"][0] {
+  newsBySlug: (
+    slug: string
+  ) => `*[_type == "news" && slug.current == "${slug}"][0] {
     _id,
     title,
     slug,
@@ -101,7 +116,9 @@ export const newsQueries = {
   }`,
 
   // Obter notícias por categoria
-  newsByCategory: (category: string) => `*[_type == "news" && category == "${category}"] | order(publishedAt desc) {
+  newsByCategory: (
+    category: string
+  ) => `*[_type == "news" && category == "${category}"] | order(publishedAt desc) {
     _id,
     title,
     slug,
@@ -130,7 +147,9 @@ export const promotionQueries = {
   }`,
 
   // Obter promoção por slug
-  promotionBySlug: (slug: string) => `*[_type == "promotion" && slug.current == "${slug}"][0] {
+  promotionBySlug: (
+    slug: string
+  ) => `*[_type == "promotion" && slug.current == "${slug}"][0] {
     _id,
     productName,
     slug,
@@ -158,7 +177,9 @@ export const promotionQueries = {
   }`,
 
   // Obter promoções por categoria
-  promotionsByCategory: (category: string) => `*[_type == "promotion" && category == "${category}" && validUntil >= now()] | order(validUntil asc) {
+  promotionsByCategory: (
+    category: string
+  ) => `*[_type == "promotion" && category == "${category}" && validUntil >= now()] | order(validUntil asc) {
     _id,
     productName,
     slug,
@@ -169,6 +190,17 @@ export const promotionQueries = {
     validUntil,
     category,
     createdAt
+  }`,
+};
+
+export const parliamentaryAmendmentQueries = {
+  all: `*[_type == "parliamentaryAmendment"] | order(publishedAt desc) {
+    _id, title, slug, excerpt, publishedAt, images, author, category
+  }`,
+  bySlug: (
+    slug: string
+  ) => `*[_type == "parliamentaryAmendment" && slug.current == "${slug}"][0] {
+    _id, title, slug, excerpt, content, publishedAt, images, author, category
   }`,
 };
 
@@ -203,6 +235,28 @@ export const fetchRecentNews = async (): Promise<News[]> => {
   }
 };
 
+export const fetchParliamentaryAmendments = async (): Promise<
+  ParliamentaryAmendment[]
+> => {
+  try {
+    return (await sanityClient.fetch(parliamentaryAmendmentQueries.all)) || [];
+  } catch (error) {
+    console.error("Erro ao buscar emendas parlamentares:", error);
+    return [];
+  }
+};
+
+export const fetchParliamentaryAmendmentBySlug = async (
+  slug: string
+): Promise<ParliamentaryAmendment | null> => {
+  try {
+    return await sanityClient.fetch(parliamentaryAmendmentQueries.bySlug(slug));
+  } catch (error) {
+    console.error("Erro ao buscar emenda parlamentar:", error);
+    return null;
+  }
+};
+
 // Funções auxiliares para Promoções
 export const fetchPromotions = async (): Promise<Promotion[]> => {
   try {
@@ -214,9 +268,13 @@ export const fetchPromotions = async (): Promise<Promotion[]> => {
   }
 };
 
-export const fetchPromotionBySlug = async (slug: string): Promise<Promotion | null> => {
+export const fetchPromotionBySlug = async (
+  slug: string
+): Promise<Promotion | null> => {
   try {
-    const data = await sanityClient.fetch(promotionQueries.promotionBySlug(slug));
+    const data = await sanityClient.fetch(
+      promotionQueries.promotionBySlug(slug)
+    );
     return data;
   } catch (error) {
     console.error("Erro ao buscar promoção:", error);

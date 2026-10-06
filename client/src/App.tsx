@@ -12,12 +12,20 @@ import Contato from "./pages/Contato";
 import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
 import Promotions from "./pages/Promotions";
+import ParliamentaryAmendments from "./pages/ParliamentaryAmendments";
+import ParliamentaryAmendmentDetail from "./pages/ParliamentaryAmendmentDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 import { useLocation } from "wouter";
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
 
 function Router() {
   return (
@@ -28,6 +36,14 @@ function Router() {
       <Route path={"/noticias"} component={News} />
       <Route path={"/noticias/:slug"} component={NewsDetail} />
       <Route path={"/promocoes"} component={Promotions} />
+      <Route
+        path={"/emendas-parlamentares"}
+        component={ParliamentaryAmendments}
+      />
+      <Route
+        path={"/emendas-parlamentares/:slug"}
+        component={ParliamentaryAmendmentDetail}
+      />
       <Route path={"/admin/login"} component={AdminLogin} />
       <Route path={"/admin"} component={AdminPanel} />
       <Route path={"/404"} component={NotFound} />

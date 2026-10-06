@@ -23,7 +23,7 @@ interface AuthState {
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
   checkAuth: () => Promise<void>;
-  initializeAuth: () => void;
+  initializeAuth: () => () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
